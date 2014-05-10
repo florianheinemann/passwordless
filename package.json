@@ -1,0 +1,36 @@
+{
+  "name": "passwordless",
+  "version": "0.0.1",
+  "description": "A node.js module for passwordless authentication",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/florianheinemann/passwordless.git"
+  },
+  "keywords": [
+    "node",
+    "nodejs",
+    "passwordless",
+    "nopassword",
+    "password-less",
+    "no-password",
+    "authentication"
+  ],
+  "author": "Florian Heinemann <florian.heinemann@gmail.com> (http://twitter.com/florian__h)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/florianheinemann/passwordless/issues"
+  },
+  "homepage": "https://github.com/florianheinemann/passwordless",
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "express": "^4.1.1",
+    "grunt": "^0.4.4",
+    "grunt-mocha-test": "^0.10.2",
+    "mocha": "^1.18.2",
+    "supertest": "^0.12.0"
+  }
+}
