@@ -79,29 +79,22 @@ describe('passwordless', function() {
 				.get('/protected?token=invalid')
 				.expect(403, done);
 		}),
-		it('should forward to the requested URL if the token passed is valid', function (done) {
-
-			var app = express();
-
-			passwordless.init(new AuthDataStoreMock());
-
-			app.get('/protected', passwordless.authenticate(),
-				function(req, res){
-					res.send(200, 'authenticated');
-			});
-
-			request(app)
-				.get('/protected?token=valid')
-				.expect(200, 'authenticated', done);
-		}),
 		it('should return an internal server error if DataStore does return error', function (done) {
 
 			var app = express();
 
 			passwordless.init(new AuthDataStoreMock());
 
-			app.get('/protected', passwordless.authenticate(),
-				function(req, res){
+			app.get('/protected', function(req, res, next) { 
+				var auth = passwordless.authenticate()
+				try {
+					auth(req, res, next);
+					done('an exception should be thrown');
+				} catch(err) {
+					done();
+				}
+			},
+				function(req, res) {
 					res.send(200, 'authenticated');
 			});
 
@@ -109,8 +102,29 @@ describe('passwordless', function() {
 				.get('/protected?token=error')
 				.expect(500, done);
 		}),
-		it('what happens if already logged in and token supplied?', function (done) {
-			done('what happens if already logged in and token supplied?');
+		describe('with proper token', function(done) {
+
+			var app = express();
+			passwordless.init(new AuthDataStoreMock());
+				
+			app.get('/protected', passwordless.authenticate(),
+				function(req, res){
+					res.send(200, 'authenticated');
+			});
+
+			var agent = request.agent(app);
+
+			it('should forward to the requested URL', function (done) {
+				agent
+					.get('/protected?token=valid')
+					.expect(200, 'authenticated', done);
+			});
+
+			it('should return 403 after supplying the token again (invalidation happens through AuthDataStore)', function (done) {
+				agent
+					.get('/protected?token=valid')
+					.expect(403, done);
+			});
 		})
 	})
 });

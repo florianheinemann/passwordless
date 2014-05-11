@@ -27,7 +27,10 @@
   "homepage": "https://github.com/florianheinemann/passwordless",
   "devDependencies": {
     "chai": "^1.9.1",
+    "cookie-parser": "^1.0.1",
+    "cookie-session": "^1.0.2",
     "express": "^4.1.1",
+    "express-session": "^1.0.4",
     "grunt": "^0.4.4",
     "grunt-mocha-test": "^0.10.2",
     "mocha": "^1.18.2",
