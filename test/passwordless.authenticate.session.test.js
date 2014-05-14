@@ -6,7 +6,7 @@ var request = require('supertest');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var cookieSession = require('cookie-session');
-var passwordless = require('../lib');
+var Passwordless = require('../lib');
 var AuthDataStoreMock = require('./mock/authdatastore');
 
 describe('passwordless', function() {
@@ -14,7 +14,7 @@ describe('passwordless', function() {
 		describe('login and preserve', function(done) {
 
 			var app = express();
-			passwordless.init(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new AuthDataStoreMock());
 
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42' } ));

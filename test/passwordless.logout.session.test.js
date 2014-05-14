@@ -6,7 +6,7 @@ var request = require('supertest');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var cookieSession = require('cookie-session');
-var passwordless = require('../lib');
+var Passwordless = require('../lib');
 var AuthDataStoreMock = require('./mock/authdatastore');
 
 describe('passwordless', function() {
@@ -14,7 +14,7 @@ describe('passwordless', function() {
 		describe('login, preserve and logout', function(done) {
 
 			var app = express();
-			passwordless.init(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new AuthDataStoreMock());
 
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42' } ));
@@ -46,7 +46,7 @@ describe('passwordless', function() {
 			it('should allow logout', function (done) {
 				agent
 					.get('/logout')
-					.expect(200, 'authenticated', done);
+					.expect(200, 'logged out', done);
 			});
 
 			it('should not anymore allow access to protected sites', function (done) {
@@ -58,7 +58,7 @@ describe('passwordless', function() {
 		describe('logout without initialized session', function(done) {
 
 			var app = express();
-			passwordless.init(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new AuthDataStoreMock());
 
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42' } ));

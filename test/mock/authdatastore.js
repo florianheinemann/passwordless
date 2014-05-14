@@ -6,7 +6,6 @@ var AuthDataStore = require('../../lib/authdatastore');
 function AuthDataStoreMock() {
 	AuthDataStore.call(this);
 	this._invalidated = false;
-	console.log('called')
 }
 
 util.inherits(AuthDataStoreMock, AuthDataStore);
