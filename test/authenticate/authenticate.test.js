@@ -3,15 +3,15 @@
 var expect = require('chai').expect;
 var express = require('express');
 var request = require('supertest');
-var Passwordless = require('../lib');
-var AuthDataStoreMock = require('./mock/authdatastore');
+var Passwordless = require('../../lib');
+var TokenStoreMock = require('../mock/tokenstore');
 
 describe('passwordless', function() {
 	describe('authenticate() [no authentication yet]', function() {
 		it('should return 403 if passwordless is not initialized - use scenario 1/3', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/test', passwordless.authenticate(),
 				function(req, res){
@@ -25,7 +25,7 @@ describe('passwordless', function() {
 		it('should return 403 if passwordless is not initialized - use scenario 2/3', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.use(passwordless.authenticate());
 
@@ -41,7 +41,7 @@ describe('passwordless', function() {
 		it('should return 403 if passwordless is not initialized - use scenario 3/3', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.use('/restricted', passwordless.authenticate());
 
@@ -64,7 +64,7 @@ describe('passwordless', function() {
 		it('should allow request if middleware is not in the mount path of express', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.use('/restricted', passwordless.authenticate());
 
@@ -85,7 +85,7 @@ describe('passwordless', function() {
 		it('should redirect to the given URL if "notAuthRedirect" is provided and user not authorized', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/test', passwordless.authenticate({ notAuthRedirect: '/login' }),
 				function(req, res){
@@ -100,7 +100,7 @@ describe('passwordless', function() {
 		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided / simple', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/test', passwordless.authenticate({ 	notAuthRedirect: '/login',
 															originUrlParam: 'origin' }),
@@ -116,7 +116,7 @@ describe('passwordless', function() {
 		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided / additional param', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/test', passwordless.authenticate({ 	notAuthRedirect: '/login?mode=test&lang=en',
 															originUrlParam: 'origin' }),
@@ -132,7 +132,7 @@ describe('passwordless', function() {
 		it('should flash a message if user is not authorized and "flashMessage" is set to true', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/protected', passwordless.authenticate({ 	notAuthRedirect: '/login',
 																flashMessage: true }),

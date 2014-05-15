@@ -3,15 +3,15 @@
 var expect = require('chai').expect;
 var express = require('express');
 var request = require('supertest');
-var Passwordless = require('../lib');
-var AuthDataStoreMock = require('./mock/authdatastore');
+var Passwordless = require('../../lib');
+var TokenStoreMock = require('../mock/tokenstore');
 
 describe('passwordless', function() {
 	describe('authenticate() [token supplied]', function() {
 		it('should return 403 if the token passed is empty', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/protected', passwordless.authenticate(),
 				function(req, res){
@@ -25,7 +25,7 @@ describe('passwordless', function() {
 		it('should return 403 if no token passed is passed at all', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/protected', passwordless.authenticate(),
 				function(req, res){
@@ -39,7 +39,7 @@ describe('passwordless', function() {
 		it('should flash a message if token is invalid and "flashMessage" is set to true', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/protected', passwordless.authenticate({ 	notAuthRedirect: '/login',
 																flashMessage: true }),
@@ -55,7 +55,7 @@ describe('passwordless', function() {
 		it('should redirect to "notAuthRedirect" and pass the original URL to "originUrlParam" is both are provided and the passed token is empty', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/protected', passwordless.authenticate({ 	notAuthRedirect: '/login?mode=test',
 																originUrlParam: 'origin' }),
@@ -71,7 +71,7 @@ describe('passwordless', function() {
 		it('should return 403 if the token passed is invalid', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/protected', passwordless.authenticate(),
 				function(req, res){
@@ -85,7 +85,7 @@ describe('passwordless', function() {
 		it('should return an internal server error if DataStore does return error', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.get('/protected', function(req, res, next) { 
 				var auth = passwordless.authenticate()
@@ -107,7 +107,7 @@ describe('passwordless', function() {
 		describe('with proper token', function(done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 				
 			app.get('/protected', passwordless.authenticate(),
 				function(req, res){

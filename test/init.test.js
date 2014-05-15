@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 var express = require('express');
 var request = require('supertest');
 var Passwordless = require('../lib');
-var AuthDataStoreMock = require('./mock/authdatastore');
+var TokenStoreMock = require('./mock/tokenstore');
 
 describe('passwordless', function() {
 	describe('constructor', function() {
@@ -17,7 +17,7 @@ describe('passwordless', function() {
 			done();
 		}),
 		it('should instantiate if initialized correctly', function (done) {
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 			expect(passwordless).to.be.instanceof(Passwordless);
 			done();
 		})

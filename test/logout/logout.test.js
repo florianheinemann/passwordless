@@ -6,15 +6,15 @@ var request = require('supertest');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var cookieSession = require('cookie-session');
-var Passwordless = require('../lib');
-var AuthDataStoreMock = require('./mock/authdatastore');
+var Passwordless = require('../../lib');
+var TokenStoreMock = require('../mock/tokenstore');
 
 describe('passwordless', function() {
 	describe('logout() [session test]', function() {
 		describe('login, preserve and logout', function(done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42' } ));
@@ -55,10 +55,10 @@ describe('passwordless', function() {
 					.expect(403, done);
 			});
 		}),
-		describe('logout without initialized session', function(done) {
+		describe('logout without logged in user', function(done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new AuthDataStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock());
 
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42' } ));
