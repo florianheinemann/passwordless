@@ -15,25 +15,25 @@ TokenStoreMock.prototype.authenticate = function(hashedToken, callback) {
 
 	var self = this;
 	var isNewUser = function() {
-		for (var i = this._users.length - 1; i >= 0; i--) {
-			if(hashedToken === this._users[i].user)
-				return true;
+		for (var i = self._users.length - 1; i >= 0; i--) {
+			if(hashedToken === self._users[i].user)
+				return false;
 		};
-		return false;
+		return true;
 	}
 
 	var isInvalidated = function() {
-		for (var i = this._users.length - 1; i >= 0; i--) {
-			if(hashedToken === this._users[i].user && this._users[i].invalidated)
+		for (var i = self._users.length - 1; i >= 0; i--) {
+			if(hashedToken === self._users[i].user && self._users[i].invalidated)
 				return true;
 		};
 		return false;
 	}
 
 	var invalidate = function() {
-		for (var i = this._users.length - 1; i >= 0; i--) {
-			if(hashedToken === this._users[i].user)
-				this._users[i].invalidated = true;
+		for (var i = self._users.length - 1; i >= 0; i--) {
+			if(hashedToken === self._users[i].user)
+				self._users[i].invalidated = true;
 		};	
 	}
 
@@ -44,10 +44,12 @@ TokenStoreMock.prototype.authenticate = function(hashedToken, callback) {
 	} else {
 		// everything else is a valid token
 		if(!this._infiniteValidity) {
+console.log('invalidate');
 			invalidate();
 		}
 
 		if(isNewUser()) {
+console.log('new');
 			this._users.push({
 				user: hashedToken,
 				invalidated: false

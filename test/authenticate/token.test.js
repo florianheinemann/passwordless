@@ -122,7 +122,7 @@ describe('passwordless', function() {
 					.expect(200, 'authenticated', done);
 			});
 
-			it('should return 403 after supplying the token again (invalidation happens through AuthDataStore)', function (done) {
+			it('should return 403 after supplying the token again (invalidation happens through TokenStoreMock)', function (done) {
 				agent
 					.get('/protected?token=valid')
 					.expect(403, done);
