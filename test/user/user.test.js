@@ -10,7 +10,7 @@ var TokenStoreMock = require('../mock/tokenstore');
 
 describe('passwordless', function() {
 	describe('user', function() {
-		describe('sessions enabled', function(done) {
+		describe('sessions enabled', function() {
 
 			var app = express();
 			var passwordless = new Passwordless(new TokenStoreMock());
@@ -91,7 +91,7 @@ describe('passwordless', function() {
 					.get('/not-protected')
 					.expect(200, '{none}', done);
 			});
-		},
+		});
 
 		describe('stateless', function(done) {
 
@@ -101,7 +101,9 @@ describe('passwordless', function() {
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42' } ));
 
-			done('test not created yet');
+			it('test not yet created', function () {
+				done('test not yet created');
+			});
 				
 			app.get('/protected', passwordless.authenticate(),
 				function(req, res){
@@ -134,7 +136,7 @@ describe('passwordless', function() {
 					.get('/protected')
 					.expect(403, done);
 			});
-		},
+		});
 
 		describe('others', function(done) {
 
@@ -153,6 +155,6 @@ describe('passwordless', function() {
 			it('are there other cases where another token could create an issue?', function (done) {
 				done('fail');
 			})
-		}))
-	)})
-})
+		});
+	});
+});
