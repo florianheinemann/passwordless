@@ -129,12 +129,6 @@ describe('passwordless', function() {
 
 			it('should delete req.user for any non-authenticated request', function (done) {
 				agent
-					.get('/protected')
-					.expect(200, '{none}', done);
-			});
-
-			it('should delete req.user for any non-authenticated request', function (done) {
-				agent
 					.get('/not-protected')
 					.expect(200, '{none}', done);
 			});
@@ -170,21 +164,56 @@ describe('passwordless', function() {
 			});
 		});
 
+		describe('change of user', function(done) {
+
+			var app = express();
+			var passwordless = new Passwordless(new TokenStoreMock());
+
+			app.use(cookieParser());
+			app.use(expressSession( { secret: '42' } ));
+
+			app.use(passwordless.sessionSupport());
+				
+			app.get('/protected', passwordless.authenticate(),
+				function(req, res){
+					res.send(200, (req.user) ? req.user : '{none}' );
+			});
+
+			var agent = request.agent(app);
+
+			it('should forward to the requested URL with proper token', function (done) {
+				agent
+					.get('/protected?token=marc')
+					.expect(200, 'marc@example.com', done);
+			});
+
+			it('should return 403 after supplying afterwards an invalid token', function (done) {
+				agent
+					.get('/protected?token=invalid')
+					.expect(403, done);
+			});
+
+			it('should still have the original user logged in', function (done) {
+				agent
+					.get('/protected')
+					.expect(200, 'marc@example.com', done);
+			});
+
+			it('should allow change of user', function (done) {
+				agent
+					.get('/protected?token=alice')
+					.expect(200, 'alice@example.com', done);
+			});
+
+			it('should still have the new user logged in', function (done) {
+				agent
+					.get('/protected')
+					.expect(200, 'alice@example.com', done);
+			});
+		})
+
 		describe('others', function(done) {
-
 			it('can we change the name of the _user_ field?', function (done) {
-				done('fail');
-			}),
-
-			it('what happens if other, new token is supplied?', function (done) {
-				done('fail');
-			}),
-
-			it('what happens stateless if other, new token is supplied?', function (done) {
-				done('fail');
-			}),
-
-			it('are there other cases where another token could create an issue?', function (done) {
 				done('fail');
 			})
 		});
