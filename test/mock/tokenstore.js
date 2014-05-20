@@ -44,12 +44,10 @@ TokenStoreMock.prototype.authenticate = function(hashedToken, callback) {
 	} else {
 		// everything else is a valid token
 		if(!this._infiniteValidity) {
-console.log('invalidate');
 			invalidate();
 		}
 
 		if(isNewUser()) {
-console.log('new');
 			this._users.push({
 				user: hashedToken,
 				invalidated: false

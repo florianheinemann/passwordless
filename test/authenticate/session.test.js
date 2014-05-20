@@ -52,4 +52,10 @@ describe('passwordless', function() {
 			});
 		})
 	})
+
+
+	it('should work with the other cookie mechanism', function (done) {
+		done('fail');
+	});
+
 });
