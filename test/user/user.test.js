@@ -96,45 +96,77 @@ describe('passwordless', function() {
 		describe('stateless', function(done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMock(true));
 
-			app.use(cookieParser());
-			app.use(expressSession( { secret: '42' } ));
-
-			it('test not yet created', function () {
-				done('test not yet created');
-			});
-				
 			app.get('/protected', passwordless.authenticate(),
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.send(200, (req.user) ? req.user : '{none}' );
+			});
+				
+			app.get('/logout', passwordless.logout(),
+				function(req, res){
+					res.send(200, (req.user) ? req.user : '{none}' );
+			});
+				
+			app.get('/not-protected',
+				function(req, res){
+					res.send(200, (req.user) ? req.user : '{none}' );
 			});
 
 			var agent = request.agent(app);
-			var agent2 = request.agent(app);
 
-			it('should return HTTP 403 for a protected URL', function (done) {
+			it('should not fill req.user if no user is logged in', function (done) {
 				agent
-					.get('/protected')
-					.expect(403, done);
+					.get('/not-protected')
+					.expect(200, '{none}', done);
 			});
 
-			it('should forward to the requested URL with valid token', function (done) {
+			it('should fill req.user right after login', function (done) {
 				agent
-					.get('/protected?token=valid')
-					.expect(200, 'authenticated', done);
+					.get('/protected?token=marc')
+					.expect(200, 'marc@example.com', done);
 			});
 
-			it('should now forward to the requested URL even without token', function (done) {
+			it('should delete req.user for any non-authenticated request', function (done) {
 				agent
 					.get('/protected')
-					.expect(200, 'authenticated', done);
+					.expect(200, '{none}', done);
 			});
 
-			it('should not allow anyone else access to the protected resource', function (done) {
-				agent2
-					.get('/protected')
-					.expect(403, done);
+			it('should delete req.user for any non-authenticated request', function (done) {
+				agent
+					.get('/not-protected')
+					.expect(200, '{none}', done);
+			});
+
+			it('should again fill req.user for a properly authenticated request', function (done) {
+				agent
+					.get('/protected?token=marc')
+					.expect(200, 'marc@example.com', done);
+			});
+
+			it('should fill req.user right after login for a 2nd user', function (done) {
+				agent
+					.get('/protected?token=alice')
+					.expect(200, 'alice@example.com', done);
+			});
+
+			it('should still fill the correct req.user for a user even after another one logged in', function (done) {
+				agent
+					.get('/protected?token=marc')
+					.expect(200, 'marc@example.com', done);
+			});
+
+			it('should not fill req.user right after logout', function (done) {
+				agent
+					.get('/logout')
+					.expect(200, '{none}', done);
+			});
+
+			it('should not fill req.user anymore after logout', function (done) {
+				agent
+					.get('/not-protected')
+					.expect(200, '{none}', done);
 			});
 		});
 
