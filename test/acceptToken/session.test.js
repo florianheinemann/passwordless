@@ -10,17 +10,20 @@ var Passwordless = require('../../lib');
 var TokenStoreMock = require('../mock/tokenstore');
 
 describe('passwordless', function() {
-	describe('authenticate() [session test]', function() {
+	describe('acceptToken() [session test]', function() {
 		describe('login and preserve', function() {
 
-			var loginAndPreserveTests = function(cookieMiddleware) {
+			var loginAndPreserveTests = function(sessionMiddleware) {
 				var app = express();
 				var passwordless = new Passwordless(new TokenStoreMock());
 
 				app.use(cookieParser());
-				app.use(cookieMiddleware);
+				app.use(sessionMiddleware);
+
+				app.use(passwordless.sessionSupport());
+				app.use(passwordless.acceptToken());
 					
-				app.get('/protected', passwordless.authenticate(),
+				app.get('/protected', passwordless.restricted(),
 					function(req, res){
 						res.send(200, 'authenticated');
 				});
@@ -60,6 +63,36 @@ describe('passwordless', function() {
 			describe('cookieSession', function() {
 				loginAndPreserveTests(cookieSession({ secret: '42' }));
 			})
+
+			describe('typical failures', function() {
+				it('should throw an error if used without session middleware', function (done) {
+					var app = express();
+					var passwordless = new Passwordless(new TokenStoreMock());
+
+					app.use(function(req, res, next) { 
+						var session = passwordless.sessionSupport()
+						try {
+							session(req, res, next);
+							done('an exception should be thrown');
+						} catch(err) {
+							done();
+						}
+					});
+
+					app.use(passwordless.acceptToken());
+						
+					app.get('/protected', passwordless.restricted(),
+						function(req, res){
+							res.send(200, 'authenticated');
+					});
+
+					var agent = request.agent(app);
+					agent
+						.get('/protected')
+						.expect(500, done);
+
+				})
+			});
 		})
 	})
 });

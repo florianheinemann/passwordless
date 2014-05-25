@@ -12,85 +12,109 @@ describe('passwordless', function() {
 	describe('user', function() {
 		describe('sessions enabled', function() {
 
-			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMock());
+			var sessionTest = function(userProperty) {
+				var app = express();
+				var passwordless = null;
 
-			app.use(cookieParser());
-			app.use(expressSession( { secret: '42' } ));
+				if(!userProperty) {
+					passwordless = new Passwordless(new TokenStoreMock());
+					userProperty = 'user';
+				} else {
+					passwordless = new Passwordless(new TokenStoreMock(), { userProperty: userProperty });
+				}
 
-			app.use(passwordless.sessionSupport());
-				
-			app.get('/protected', passwordless.authenticate(),
-				function(req, res){
-					res.send(200, (req.user) ? req.user : '{none}' );
-			});
-				
-			app.get('/logout', passwordless.logout(),
-				function(req, res){
-					res.send(200, (req.user) ? req.user : '{none}' );
-			});
-				
-			app.get('/not-protected',
-				function(req, res){
-					res.send(200, (req.user) ? req.user : '{none}' );
-			});
+				app.use(cookieParser());
+				app.use(expressSession( { secret: '42' } ));
 
-			var agent = request.agent(app);
-			var agent2 = request.agent(app);
+				app.use(passwordless.sessionSupport());
+				app.use(passwordless.acceptToken());
+					
+				app.get('/protected', passwordless.restricted(),
+					function(req, res){
+						res.send(200, (req[userProperty]) ? req[userProperty] : '{none}' );
+				});
+					
+				app.get('/logout', passwordless.logout(),
+					function(req, res){
+						res.send(200, (req[userProperty]) ? req[userProperty] : '{none}' );
+				});
+					
+				app.get('/not-protected',
+					function(req, res){
+						res.send(200, (req[userProperty]) ? req[userProperty] : '{none}' );
+				});
 
-			it('should not fill req.user if no user is logged in', function (done) {
-				agent
-					.get('/not-protected')
-					.expect(200, '{none}', done);
-			});
+				var agent = request.agent(app);
+				var agent2 = request.agent(app);
 
-			it('should fill req.user right after login', function (done) {
-				agent
-					.get('/protected?token=marc')
-					.expect(200, 'marc@example.com', done);
-			});
+				it('should not fill req.user if no user is logged in', function (done) {
+					agent
+						.get('/not-protected')
+						.expect(200, '{none}', done);
+				});
 
-			it('should continue filling req.user also without token after login', function (done) {
-				agent
-					.get('/protected')
-					.expect(200, 'marc@example.com', done);
-			});
+				it('should fill req.user right after login', function (done) {
+					agent
+						.get('/protected?token=marc')
+						.expect(200, 'marc@example.com', done);
+				});
 
-			it('should continue filling req.user also without token and in non-protected pages after login', function (done) {
-				agent
-					.get('/not-protected')
-					.expect(200, 'marc@example.com', done);
-			});
+				it('should continue filling req.user also without token after login', function (done) {
+					agent
+						.get('/protected')
+						.expect(200, 'marc@example.com', done);
+				});
 
-			it('should not fill req.user for any other user who is not logged in', function (done) {
-				agent2
-					.get('/not-protected')
-					.expect(200, '{none}', done);
-			});
+				it('should continue filling req.user also without token and in non-protected pages after login', function (done) {
+					agent
+						.get('/not-protected')
+						.expect(200, 'marc@example.com', done);
+				});
 
-			it('should fill req.user right after login for a 2nd user', function (done) {
-				agent2
-					.get('/protected?token=alice')
-					.expect(200, 'alice@example.com', done);
-			});
+				it('should not fill req.user for any other user who is not logged in', function (done) {
+					agent2
+						.get('/not-protected')
+						.expect(200, '{none}', done);
+				});
 
-			it('should still fill the correct req.user for a user even after another is logged in', function (done) {
-				agent
-					.get('/not-protected')
-					.expect(200, 'marc@example.com', done);
-			});
+				it('should fill req.user right after login for a 2nd user', function (done) {
+					agent2
+						.get('/protected?token=alice')
+						.expect(200, 'alice@example.com', done);
+				});
 
-			it('should not fill req.user anymore right after logout', function (done) {
-				agent
-					.get('/logout')
-					.expect(200, '{none}', done);
-			});
+				it('should still fill the correct req.user for a user even after another is logged in', function (done) {
+					agent
+						.get('/not-protected')
+						.expect(200, 'marc@example.com', done);
+				});
 
-			it('should not fill req.user anymore after logout', function (done) {
-				agent
-					.get('/not-protected')
-					.expect(200, '{none}', done);
-			});
+				it('should not fill req.user anymore right after logout', function (done) {
+					agent
+						.get('/logout')
+						.expect(200, '{none}', done);
+				});
+
+				it('should not fill req.user anymore after logout', function (done) {
+					agent
+						.get('/not-protected')
+						.expect(200, '{none}', done);
+				});
+
+				it('should fill req.user right after login using an unprotected resource', function (done) {
+					agent
+						.get('/not-protected?token=marc')
+						.expect(200, 'marc@example.com', done);
+				});
+			}
+
+			describe('user details in req.user (default)', function() {
+				sessionTest();
+			})
+
+			describe('user details stored in a non-default property', function() {
+				sessionTest('customer');
+			})
 		});
 
 		describe('stateless', function(done) {
@@ -98,7 +122,9 @@ describe('passwordless', function() {
 			var app = express();
 			var passwordless = new Passwordless(new TokenStoreMock(true));
 
-			app.get('/protected', passwordless.authenticate(),
+			app.use(passwordless.acceptToken());
+
+			app.get('/protected', passwordless.restricted(),
 				function(req, res){
 					res.send(200, (req.user) ? req.user : '{none}' );
 			});
@@ -173,8 +199,9 @@ describe('passwordless', function() {
 			app.use(expressSession( { secret: '42' } ));
 
 			app.use(passwordless.sessionSupport());
+			app.use(passwordless.acceptToken());
 				
-			app.get('/protected', passwordless.authenticate(),
+			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
 					res.send(200, (req.user) ? req.user : '{none}' );
 			});
@@ -183,39 +210,33 @@ describe('passwordless', function() {
 
 			it('should forward to the requested URL with proper token', function (done) {
 				agent
-					.get('/protected?token=marc')
+					.get('/restricted?token=marc')
 					.expect(200, 'marc@example.com', done);
 			});
 
-			it('should return 403 after supplying afterwards an invalid token', function (done) {
+			it('should ignore if afterwards an invalid token is passed', function (done) {
 				agent
-					.get('/protected?token=invalid')
-					.expect(403, done);
+					.get('/restricted?token=invalid')
+					.expect(200, done);
 			});
 
 			it('should still have the original user logged in', function (done) {
 				agent
-					.get('/protected')
+					.get('/restricted')
 					.expect(200, 'marc@example.com', done);
 			});
 
 			it('should allow change of user', function (done) {
 				agent
-					.get('/protected?token=alice')
+					.get('/restricted?token=alice')
 					.expect(200, 'alice@example.com', done);
 			});
 
 			it('should still have the new user logged in', function (done) {
 				agent
-					.get('/protected')
+					.get('/restricted')
 					.expect(200, 'alice@example.com', done);
 			});
 		})
-
-		describe('others', function(done) {
-			it('can we change the name of the _user_ field?', function (done) {
-				done('fail');
-			})
-		});
 	});
 });

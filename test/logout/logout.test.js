@@ -18,8 +18,11 @@ describe('passwordless', function() {
 
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42' } ));
+
+			app.use(passwordless.sessionSupport());
+			app.use(passwordless.acceptToken());
 				
-			app.get('/protected', passwordless.authenticate(),
+			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
 					res.send(200, 'authenticated');
 			});
@@ -33,13 +36,13 @@ describe('passwordless', function() {
 
 			it('should forward to the requested URL with valid token', function (done) {
 				agent
-					.get('/protected?token=valid')
+					.get('/restricted?token=valid')
 					.expect(200, 'authenticated', done);
 			});
 
 			it('should now forward to the requested URL even without token', function (done) {
 				agent
-					.get('/protected')
+					.get('/restricted')
 					.expect(200, 'authenticated', done);
 			});
 
@@ -49,9 +52,9 @@ describe('passwordless', function() {
 					.expect(200, 'logged out', done);
 			});
 
-			it('should not anymore allow access to protected sites', function (done) {
+			it('should not anymore allow access to restricted sites', function (done) {
 				agent
-					.get('/protected')
+					.get('/restricted')
 					.expect(403, done);
 			});
 		}),

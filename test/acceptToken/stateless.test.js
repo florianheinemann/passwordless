@@ -15,8 +15,10 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless(new TokenStoreMock(true));
+
+			app.use(passwordless.acceptToken());
 				
-			app.get('/protected', passwordless.authenticate(),
+			app.get('/protected', passwordless.restricted(),
 				function(req, res){
 					res.send(200, 'authenticated');
 			});
