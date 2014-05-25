@@ -141,7 +141,6 @@ describe('passwordless', function() {
 					.expect('location', '/login')
 					.end(function(err,res) {
 						cookie = res.headers['set-cookie'];
-						console.log(cookie);
 						done();
 					});
 			})
