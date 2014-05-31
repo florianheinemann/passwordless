@@ -15,23 +15,27 @@ describe('passwordless', function() {
 		var delivered = [];
 		var lastStoredToken = null;
 		var deliveryMockVerify = function(contactToVerify, done) {
-				if(contactToVerify === 'error') {
-					done('error', null);
-				} else if (contactToVerify === 'unknown') {
-					done(null, null);
-				} else {
-					done(null, 'UID/' + contactToVerify);
-				}
+				setTimeout(function() {
+					if(contactToVerify === 'error') {
+						done('error', null);
+					} else if (contactToVerify === 'unknown') {
+						done(null, null);
+					} else {
+						done(null, 'UID/' + contactToVerify);
+					}
+				}, 0);
 			};
 
 		var deliveryMockSend = function(name) {
 			return function(tokenToSend, user, done) {
-					if(user === 'UID/deliveryError') {
-						return done('error');
-					}
+					setTimeout(function() {
+						if(user === 'UID/deliveryError') {
+							return done('error');
+						}
 
-					delivered.push([tokenToSend, user, name]);
-					done();
+						delivered.push([tokenToSend, user, name]);
+						done();
+					}, 0);
 				}
 			}
 

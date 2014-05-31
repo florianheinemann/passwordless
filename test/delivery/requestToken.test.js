@@ -16,23 +16,29 @@ describe('passwordless', function() {
 		var delivered = [];
 		var lastStoredToken = null;
 		var deliveryMockVerify = function(contactToVerify, done) {
-				if(contactToVerify === 'error') {
-					done('error', null);
-				} else if (contactToVerify === 'unknown') {
-					done(null, null);
-				} else {
-					done(null, 'UID/' + contactToVerify);
-				}
+				setTimeout(function() {
+					if(contactToVerify === 'error') {
+						done('error', null);
+					} else if (contactToVerify === 'unknown') {
+						done(null, null);
+					} else {
+						done(null, 'UID/' + contactToVerify);
+					}
+				}, 0);
 			};
 
-		var deliveryMockSend = function(tokenToSend, user, done) {
-				if(user === 'UID/deliveryError') {
-					return done('error');
-				}
+		var deliveryMockSend = function(name) {
+			return function(tokenToSend, user, done) {
+					setTimeout(function() {
+						if(user === 'UID/deliveryError') {
+							return done('error');
+						}
 
-				delivered.push([tokenToSend, user]);
-				done();
-			};
+						delivered.push([tokenToSend, user, name]);
+						done();
+					}, 0);
+				}
+			}
 
 		describe('default delivery', function() {
 
@@ -43,7 +49,7 @@ describe('passwordless', function() {
 
 			app.use(bodyParser());
 
-			passwordless.add(deliveryMockVerify, deliveryMockSend);
+			passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 			app.post('/login', passwordless.requestToken(),
 				function(req, res){
@@ -152,7 +158,7 @@ describe('passwordless', function() {
 
 			app.use(bodyParser());
 
-			passwordless.add(deliveryMockVerify, deliveryMockSend, {tokenAlgorithm: function() {return 'random'}});
+			passwordless.add(deliveryMockVerify, deliveryMockSend(), {tokenAlgorithm: function() {return 'random'}});
 
 			app.post('/login', passwordless.requestToken(),
 				function(req, res){
@@ -183,7 +189,7 @@ describe('passwordless', function() {
 
 				app.use(bodyParser());
 
-				passwordless.add(deliveryMockVerify, deliveryMockSend);
+				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.post('/login', passwordless.requestToken({ input: 'phone' }),
 					function(req, res){
@@ -228,13 +234,42 @@ describe('passwordless', function() {
 				})
 			})
 
+			describe('option:allowGet', function() {
+				var app = express();
+				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+
+				passwordless.add('email', deliveryMockVerify, deliveryMockSend('email'));
+				passwordless.add('sms', deliveryMockVerify, deliveryMockSend('sms'));
+
+				app.get('/login', passwordless.requestToken({ allowGet: true }),
+					function(req, res){
+						res.send(200);
+				});
+
+				var agent = request.agent(app);
+
+				it('should verify a proper user', function (done) {
+					delivered = [];
+					agent
+						.get('/login?email=alice&strategy=sms')
+						.expect(200, done);
+				})
+
+				it('should have sent a token', function () {
+					expect(delivered.length).to.equal(1);
+					expect(delivered[0][0]).to.exist;
+					expect(delivered[0][1]).to.equal('UID/alice');
+					expect(delivered[0][2]).to.equal('sms');
+				})
+			})
+
 			describe('option:unknownUserRedirect', function() {
 				var app = express();
 				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
 
 				app.use(bodyParser());
 
-				passwordless.add(deliveryMockVerify, deliveryMockSend);
+				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.post('/login', passwordless.requestToken({ unknownUserRedirect: '/mistake' }),
 					function(req, res){
@@ -284,7 +319,7 @@ describe('passwordless', function() {
 			describe('option:unknownUserFlash', function() {
 				var app = express();
 				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
-				passwordless.add(deliveryMockVerify, deliveryMockSend);
+				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.use(bodyParser());
 
@@ -330,7 +365,7 @@ describe('passwordless', function() {
 			describe('option:unknownUserFlash (without flash middleware)', function() {
 				var app = express();
 				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
-				passwordless.add(deliveryMockVerify, deliveryMockSend);
+				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.use(bodyParser());
 
@@ -357,7 +392,7 @@ describe('passwordless', function() {
 			describe('option:unknownUserFlash (without option:unknownUserRedirect)', function() {
 				var app = express();
 				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
-				passwordless.add(deliveryMockVerify, deliveryMockSend);
+				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.use(bodyParser());
 
@@ -386,7 +421,7 @@ describe('passwordless', function() {
 			var app = express();
 			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
 
-			passwordless.add(deliveryMockVerify, deliveryMockSend);
+			passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 			it('should throw an exception', function (done) {
 

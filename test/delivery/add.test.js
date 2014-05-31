@@ -12,18 +12,22 @@ describe('passwordless', function() {
 	describe('add', function() {
 
 		var deliveryMockVerify = function(contactToVerify, done) {
-				if(contactToVerify === 'error') {
-					done('error', null);
-				} else if (contactToVerify === 'unknown') {
-					done(null, null);
-				} else {
-					done(null, 'UID/' + contactToVerify);
-				}
+				setTimeout(function() {
+					if(contactToVerify === 'error') {
+						done('error', null);
+					} else if (contactToVerify === 'unknown') {
+						done(null, null);
+					} else {
+						done(null, 'UID/' + contactToVerify);
+					}					
+				}, 0);
 			};
 
 		var deliveryMockSend = function(tokenToSend, user, done) {
-				delivered.push([tokenToSend, user]);
-				done();
+				setTimeout(function() {
+					delivered.push([tokenToSend, user]);
+					done();
+				}, 0);
 			};
 
 		it('shall work with correct default usage', function () {

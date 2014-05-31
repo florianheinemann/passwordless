@@ -14,29 +14,35 @@ describe('passwordless', function() {
 
 		var delivered = [];
 		var deliveryMockVerify = function(contactToVerify, done) {
-				if(contactToVerify === 'error') {
-					done('error', null);
-				} else if (contactToVerify === 'unknown') {
-					done(null, null);
-				} else {
-					done(null, 'UID/' + contactToVerify);
-				}
+				setTimeout(function() {
+					if(contactToVerify === 'error') {
+						done('error', null);
+					} else if (contactToVerify === 'unknown') {
+						done(null, null);
+					} else {
+						done(null, 'UID/' + contactToVerify);
+					}
+				}, 0);
 			};
 
-		var deliveryMockSend = function(tokenToSend, user, done) {
-				if(user === 'UID/deliveryError') {
-					return done('error');
-				}
+		var deliveryMockSend = function(name) {
+			return function(tokenToSend, user, done) {
+					setTimeout(function() {
+						if(user === 'UID/deliveryError') {
+							return done('error');
+						}
 
-				delivered.push([tokenToSend, user]);
-				done();
-			};
+						delivered.push([tokenToSend, user, name]);
+						done();
+					}, 0);
+				}
+			}
 
 		describe('standard', function() {
 
 			var app = express();
 			var passwordless = new Passwordless(new TokenStoreMock());
-			passwordless.add(deliveryMockVerify, deliveryMockSend);
+			passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 			app.use(bodyParser());
 			app.use(cookieParser());
