@@ -7,14 +7,14 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var cookieSession = require('cookie-session');
 var Passwordless = require('../../lib');
-var TokenStoreMock = require('../mock/tokenstore');
+var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
 
 describe('passwordless', function() {
 	describe('authenticate() [stateless test]', function() {
 		describe('login and request resource without session', function(done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMock(true));
+			var passwordless = new Passwordless(new TokenStoreMockAuthOnly(true));
 
 			app.use(passwordless.acceptToken());
 				
@@ -25,10 +25,10 @@ describe('passwordless', function() {
 
 			var agent = request.agent(app);
 
-			it('should return HTTP 403 for a protected URL', function (done) {
+			it('should return HTTP 401 for a protected URL', function (done) {
 				agent
 					.get('/protected')
-					.expect(403, done);
+					.expect(401, done);
 			});
 
 			it('should forward to the requested URL with valid token', function (done) {
@@ -46,7 +46,7 @@ describe('passwordless', function() {
 			it('should still not forward to the requested URL without token', function (done) {
 				agent
 					.get('/protected')
-					.expect(403, done);
+					.expect(401, done);
 			});
 		})
 	})

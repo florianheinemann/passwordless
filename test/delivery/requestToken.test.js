@@ -7,12 +7,14 @@ var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var Passwordless = require('../../lib');
-var TokenStoreMock = require('../mock/tokenstore');
+var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
+var flash = require('connect-flash');
 
 describe('passwordless', function() {
 	describe('requestToken', function() {
 
 		var delivered = [];
+		var lastStoredToken = null;
 		var deliveryMockVerify = function(contactToVerify, done) {
 				if(contactToVerify === 'error') {
 					done('error', null);
@@ -35,7 +37,9 @@ describe('passwordless', function() {
 		describe('default delivery', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMockAuthOnly(false, function(token) {
+				lastStoredToken = token;
+			}));
 
 			app.use(bodyParser());
 
@@ -48,25 +52,39 @@ describe('passwordless', function() {
 
 			var agent = request.agent(app);
 
-			it('should return 403 if the field "email" is not provided', function (done) {
+			it('should return 400 if the field "email" is not provided', function (done) {
 				agent
 					.post('/login')
-					.expect(403, done);
+					.expect(400, done);
 			})
 
-			it('should not have sent any tokens so far', function () {
+			it('should not have sent or stored any tokens so far', function () {
 				expect(delivered.length).to.equal(0);
+				expect(lastStoredToken).to.not.exist;
 			})
 
-			it('should return 403 in case of an unknown user', function (done) {
+			it('should return 401 in case of an empty user', function (done) {
+				agent
+					.post('/login')
+					.send( { email: '' } )
+					.expect(401, done);
+			})
+
+			it('should not have sent or stored any tokens so far', function () {
+				expect(delivered.length).to.equal(0);
+				expect(lastStoredToken).to.not.exist;
+			})
+
+			it('should return 401 in case of an unknown user', function (done) {
 				agent
 					.post('/login')
 					.send( { email: 'unknown' } )
-					.expect(403, done);
+					.expect(401, done);
 			})
 
-			it('should not have sent any tokens so far', function () {
+			it('should not have sent or stored any tokens so far', function () {
 				expect(delivered.length).to.equal(0);
+				expect(lastStoredToken).to.not.exist;
 			})
 
 			it('should return 500 in case of an error on the verification layer', function (done) {
@@ -76,8 +94,9 @@ describe('passwordless', function() {
 					.expect(500, done);
 			})
 
-			it('should not have sent any tokens so far', function () {
+			it('should not have sent or stored any tokens so far', function () {
 				expect(delivered.length).to.equal(0);
+				expect(lastStoredToken).to.not.exist;
 			})	
 
 			it('should return 500 in case of an error on the delivery layer', function (done) {
@@ -89,6 +108,7 @@ describe('passwordless', function() {
 
 			it('should not have sent any tokens so far', function () {
 				expect(delivered.length).to.equal(0);
+				lastStoredToken = null;
 			})
 
 			it('should verify a proper user', function (done) {
@@ -98,10 +118,12 @@ describe('passwordless', function() {
 					.expect(200, done);
 			})
 
-			it('should have sent a token', function () {
+			it('should have sent and stored token', function () {
 				expect(delivered.length).to.equal(1);
 				expect(delivered[0][0]).to.have.length.above(20);
 				expect(delivered[0][1]).to.equal('UID/alice');
+				expect(lastStoredToken).to.exist;
+				lastStoredToken = null;
 			})
 
 			it('should verify another proper user', function (done) {
@@ -111,10 +133,11 @@ describe('passwordless', function() {
 					.expect(200, done);
 			})
 
-			it('should have sent a token', function () {
+			it('should have sent and stored token', function () {
 				expect(delivered.length).to.equal(2);
 				expect(delivered[1][0]).to.have.length.above(20);
 				expect(delivered[1][1]).to.equal('UID/mark');
+				expect(lastStoredToken).to.exist;
 			})
 
 			it('should create random tokens', function () {
@@ -122,10 +145,41 @@ describe('passwordless', function() {
 			})
 		})
 
+		describe('different tokenAlgorithm', function() {
+
+			var app = express();
+			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+
+			app.use(bodyParser());
+
+			passwordless.add(deliveryMockVerify, deliveryMockSend, {tokenAlgorithm: function() {return 'random'}});
+
+			app.post('/login', passwordless.requestToken(),
+				function(req, res){
+					res.send(200);
+			});
+
+			var agent = request.agent(app);
+
+			it('should verify a proper user', function (done) {
+				delivered = [];
+				agent
+					.post('/login')
+					.send( { email: 'alice' } )
+					.expect(200, done);
+			})
+
+			it('should have sent and stored token', function () {
+				expect(delivered.length).to.equal(1);
+				expect(delivered[0][0]).to.equal('random');
+				expect(delivered[0][1]).to.equal('UID/alice');
+			})
+		})
+
 		describe('requestToken(options)', function() {
 			describe('option:input', function() {
 				var app = express();
-				var passwordless = new Passwordless(new TokenStoreMock());
+				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
 
 				app.use(bodyParser());
 
@@ -138,22 +192,22 @@ describe('passwordless', function() {
 
 				var agent = request.agent(app);
 
-				it('should return 403 if the field "phone" is not provided', function (done) {
+				it('should return 400 if the field "phone" is not provided', function (done) {
 					delivered = [];
 					agent
 						.post('/login')
-						.expect(403, done);
+						.expect(400, done);
 				})
 
 				it('should not have sent any tokens so far', function () {
 					expect(delivered.length).to.equal(0);
 				})
 
-				it('should return 403 in case of an unknown user', function (done) {
+				it('should return 401 in case of an unknown user', function (done) {
 					agent
 						.post('/login')
 						.send( { phone: 'unknown' } )
-						.expect(403, done);
+						.expect(401, done);
 				})
 
 				it('should not have sent any tokens so far', function () {
@@ -174,15 +228,15 @@ describe('passwordless', function() {
 				})
 			})
 
-			describe('option:failureRedirect', function() {
+			describe('option:unknownUserRedirect', function() {
 				var app = express();
-				var passwordless = new Passwordless(new TokenStoreMock());
+				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
 
 				app.use(bodyParser());
 
 				passwordless.add(deliveryMockVerify, deliveryMockSend);
 
-				app.post('/login', passwordless.requestToken({ failureRedirect: '/mistake' }),
+				app.post('/login', passwordless.requestToken({ unknownUserRedirect: '/mistake' }),
 					function(req, res){
 						res.send(200);
 				});
@@ -201,9 +255,10 @@ describe('passwordless', function() {
 					expect(delivered.length).to.equal(0);
 				})
 
-				it('should return 403 in case of an unknown user', function (done) {
+				it('should redirect to /mistake in case of an unknown user', function (done) {
 					agent
 						.post('/login')
+						.send( { email: 'unknown' } )
 						.expect(302)
 						.expect('location', '/mistake', done);
 				})
@@ -225,33 +280,143 @@ describe('passwordless', function() {
 					expect(delivered[0][1]).to.equal('UID/alice');
 				})
 			})
+
+			describe('option:unknownUserFlash', function() {
+				var app = express();
+				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+				passwordless.add(deliveryMockVerify, deliveryMockSend);
+
+				app.use(bodyParser());
+
+				app.use(cookieParser());
+				app.use(expressSession({ secret: '42' }));
+
+				app.use(flash());
+
+				app.post('/login', passwordless.requestToken({ unknownUserRedirect: '/mistake',
+																unknownUserFlash: 'Provided user not valid' }),
+					function(req, res){
+						res.send(200);
+				});
+
+				app.get('/mistake',
+					function(req, res) {
+						res.send(200, req.flash('passwordless')[0]);
+				});
+
+				var agent = request(app);
+				var cookie;
+
+				it('should redirect to /mistake in case of an unknown user', function (done) {
+					agent
+						.post('/login')
+						.send( { email: 'unknown' } )
+						.expect(302)
+						.expect('location', '/mistake')
+						.end(function(err, res) {
+							cookie = res.headers['set-cookie'];
+							done();
+						});
+				})
+
+				it('should flash a message', function (done) {
+					agent
+						.get('/mistake')
+	                    .set('Cookie', cookie)
+						.expect(200, 'Provided user not valid', done);
+				})
+			})
+
+			describe('option:unknownUserFlash (without flash middleware)', function() {
+				var app = express();
+				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+				passwordless.add(deliveryMockVerify, deliveryMockSend);
+
+				app.use(bodyParser());
+
+				app.use(cookieParser());
+				app.use(expressSession({ secret: '42' }));
+
+				app.post('/login', passwordless.requestToken({ unknownUserRedirect: '/mistake',
+																unknownUserFlash: 'Provided user not valid' }),
+					function(req, res){
+						res.send(200);
+				});
+
+				var agent = request(app);
+				var cookie;
+
+				it('should throw an exception', function (done) {
+					agent
+						.post('/login')
+						.send( { email: 'unknown' } )
+						.expect(500, done);
+				})
+			})
+
+			describe('option:unknownUserFlash (without option:unknownUserRedirect)', function() {
+				var app = express();
+				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+				passwordless.add(deliveryMockVerify, deliveryMockSend);
+
+				app.use(bodyParser());
+
+				app.use(cookieParser());
+				app.use(expressSession({ secret: '42' }));
+
+				app.post('/login', passwordless.requestToken({ unknownUserFlash: 'Provided user not valid' }),
+					function(req, res){
+						res.send(200);
+				});
+				
+				var agent = request(app);
+				var cookie;
+
+				it('should throw an exception', function (done) {
+					agent
+						.post('/login')
+						.send( { email: 'alice' } )
+						.expect(500, done);
+				})
+			})
 		})
 
 		describe('without bodyParser', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
 
 			passwordless.add(deliveryMockVerify, deliveryMockSend);
 
-			it('should throw an error', function (done) {
+			it('should throw an exception', function (done) {
 
-				app.post('/login', 
-					function(req, res, next) {
-						var request = passwordless.requestToken();
-						try {
-							request(req, res, next);
-							done('should have thrown exception');
-						} catch(err) {
-							done();
-						}
-					},
+				app.post('/login', passwordless.requestToken(),
 					function(req, res){
 						res.send(200);
 				});
 
 				var agent = request.agent(app);
 
+				agent
+					.post('/login')
+					.expect(500, done);
+			})
+		})
+
+		describe('without added strategy', function() {
+
+			var app = express();
+			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			app.use(bodyParser());
+
+			it('should return a 500 page', function (done) {
+
+				app.post('/login', passwordless.requestToken(),
+					function(req, res){
+						res.send(200);
+				});
+
+				var agent = request.agent(app);
 				agent
 					.post('/login')
 					.expect(500, done);

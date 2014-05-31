@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var cookieSession = require('cookie-session');
 var Passwordless = require('../../lib');
-var TokenStoreMock = require('../mock/tokenstore');
+var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
 
 describe('passwordless', function() {
 	describe('acceptToken() [session test]', function() {
@@ -15,7 +15,7 @@ describe('passwordless', function() {
 
 			var loginAndPreserveTests = function(sessionMiddleware) {
 				var app = express();
-				var passwordless = new Passwordless(new TokenStoreMock());
+				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
 
 				app.use(cookieParser());
 				app.use(sessionMiddleware);
@@ -31,10 +31,10 @@ describe('passwordless', function() {
 				var agent = request.agent(app);
 				var agent2 = request.agent(app);
 
-				it('should return HTTP 403 for a protected URL', function (done) {
+				it('should return HTTP 401 for a protected URL', function (done) {
 					agent
 						.get('/protected')
-						.expect(403, done);
+						.expect(401, done);
 				});
 
 				it('should forward to the requested URL with valid token', function (done) {
@@ -52,7 +52,7 @@ describe('passwordless', function() {
 				it('should not allow anyone else access to the protected resource', function (done) {
 					agent2
 						.get('/protected')
-						.expect(403, done);
+						.expect(401, done);
 				});
 			}
 
@@ -65,20 +65,11 @@ describe('passwordless', function() {
 			})
 
 			describe('typical failures', function() {
-				it('should throw an error if used without session middleware', function (done) {
+				it('should throw an exception if used without session middleware', function (done) {
 					var app = express();
-					var passwordless = new Passwordless(new TokenStoreMock());
+					var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
 
-					app.use(function(req, res, next) { 
-						var session = passwordless.sessionSupport()
-						try {
-							session(req, res, next);
-							done('an exception should be thrown');
-						} catch(err) {
-							done();
-						}
-					});
-
+					app.use(passwordless.sessionSupport());
 					app.use(passwordless.acceptToken());
 						
 					app.get('/protected', passwordless.restricted(),
@@ -90,7 +81,6 @@ describe('passwordless', function() {
 					agent
 						.get('/protected')
 						.expect(500, done);
-
 				})
 			});
 		})

@@ -3,59 +3,42 @@
 var util = require('util');
 var TokenStore = require('../../lib').TokenStore;
 
-function TokenStoreMock(infiniteValidity) {
+function TokenStoreMock() {
 	TokenStore.call(this);
-	this._infiniteValidity = infiniteValidity || false;
-	this._users = [];
+	this.records = [];
 }
 
 util.inherits(TokenStoreMock, TokenStore);
 
 TokenStoreMock.prototype.authenticate = function(hashedToken, callback) {
-
+	// setTimeout to validate that async operation works
 	var self = this;
-	var isNewUser = function() {
-		for (var i = self._users.length - 1; i >= 0; i--) {
-			if(hashedToken === self._users[i].user)
-				return false;
+	setTimeout(function() {
+		for (var i = self.records.length - 1; i >= 0; i--) {
+			if(self.records[i].hashedToken === hashedToken) {
+				if(self.records[i].validTill >= Date.now()) {
+					return callback(null, self.records[i].uid, self.records[i].origin);
+				}
+			}
 		};
-		return true;
-	}
-
-	var isInvalidated = function() {
-		for (var i = self._users.length - 1; i >= 0; i--) {
-			if(hashedToken === self._users[i].user && self._users[i].invalidated)
-				return true;
-		};
-		return false;
-	}
-
-	var invalidate = function() {
-		for (var i = self._users.length - 1; i >= 0; i--) {
-			if(hashedToken === self._users[i].user)
-				self._users[i].invalidated = true;
-		};	
-	}
-
-	if(hashedToken === 'invalid' || isInvalidated()) {
-		callback(null, false, null);
-	} else if(hashedToken === 'error') {
-		callback('Unknown error', null, null);
-	} else {
-		// everything else is a valid token
-		if(!this._infiniteValidity) {
-			invalidate();
-		}
-
-		if(isNewUser()) {
-			this._users.push({
-				user: hashedToken,
-				invalidated: false
-			});
-		}
-
-		callback(null, hashedToken + '@example.com', null);		
-	}
+		callback(null, false);		
+	}, 0)
 };
+
+TokenStoreMock.prototype.store = function(hashedToken, uid, msToLive, originUrl, callback) {
+	// setTimeout to validate that async operation works
+	var self = this;
+	setTimeout(function() { 
+		self.records.push(new Record(uid, hashedToken, Date.now() + msToLive, originUrl))
+		callback();
+	}, 0)
+}
+
+function Record(uid, hashedToken, validTill, origin) {
+	this.uid = uid;
+	this.hashedToken = hashedToken;
+	this.validTill = validTill;
+	this.origin = origin;
+}
 
 module.exports = TokenStoreMock;

@@ -6,7 +6,7 @@ var request = require('supertest');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var Passwordless = require('../../lib');
-var TokenStoreMock = require('../mock/tokenstore');
+var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
 
 describe('passwordless', function() {
 	describe('user', function() {
@@ -17,10 +17,10 @@ describe('passwordless', function() {
 				var passwordless = null;
 
 				if(!userProperty) {
-					passwordless = new Passwordless(new TokenStoreMock());
+					passwordless = new Passwordless(new TokenStoreMockAuthOnly(), { secret: '42' });
 					userProperty = 'user';
 				} else {
-					passwordless = new Passwordless(new TokenStoreMock(), { userProperty: userProperty });
+					passwordless = new Passwordless(new TokenStoreMockAuthOnly(), { secret: '42', userProperty: userProperty });
 				}
 
 				app.use(cookieParser());
@@ -120,7 +120,7 @@ describe('passwordless', function() {
 		describe('stateless', function(done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMock(true));
+			var passwordless = new Passwordless(new TokenStoreMockAuthOnly(true), { secret: '42' });
 
 			app.use(passwordless.acceptToken());
 
@@ -193,7 +193,7 @@ describe('passwordless', function() {
 		describe('change of user', function(done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMock());
+			var passwordless = new Passwordless(new TokenStoreMockAuthOnly(), { secret: '42' });
 
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42' } ));
