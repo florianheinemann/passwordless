@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>Passwordless - Example: Simple-Mail</h1>
+    <p>
+    User: 
+    <% if(user) { %>
+    	<%= user %> (logged in <a href='/logout'>logout</a>)
+    <% } else { %>
+    	Not logged in
+    <% } %>
+    </p>
+    <p>
+    	<a href='/login'>Login / Register</a>
+    </p>
+  </body>
+</html>
