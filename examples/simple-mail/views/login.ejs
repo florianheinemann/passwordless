@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>Passwordless - Login</h1>
+    <p>
+    User: 
+    <% if(user) { %>
+    	<%= user %> (logged in <a href='/logout'>logout</a>)
+    <% } else { %>
+    	Not logged in
+    <% } %>
+    </p>
+    <p>
+    <form action="/sendtoken" method="POST">
+      Email:
+      <br><input name="email" type="text">
+      <br><input type="submit" value="Login / Register">
+    </form>
+    </p>
+    <p>
+    	<a href='/'>Back to homepage</a>
+    </p>
+  </body>
+</html>

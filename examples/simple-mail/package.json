@@ -6,7 +6,10 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "ejs": "*",
+    "emailjs": "^0.3.8",
     "express": "3.4.6",
-    "ejs": "*"
+    "passwordless": "0.0.1",
+    "passwordless-mongostore": "0.0.2"
   }
 }
