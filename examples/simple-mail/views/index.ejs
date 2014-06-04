@@ -7,13 +7,15 @@
     <p>
     User: 
     <% if(user) { %>
-    	<%= user %> (logged in <a href='/logout'>logout</a>)
+    	<%= user %> (<a href='/logout'>logout</a>)
     <% } else { %>
     	Not logged in
     <% } %>
     </p>
-    <p>
-    	<a href='/login'>Login / Register</a>
-    </p>
+    <ul>
+      <li>
+        <a href='/login'>Login / Register</a>
+      </li>
+    </ul>
   </body>
 </html>

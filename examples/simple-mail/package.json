@@ -1,15 +1,20 @@
 {
-  "name": "passwordless-example-simple-mail",
+  "name": "testapp",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "ejs": "*",
+    "body-parser": "~1.0.0",
+    "cookie-parser": "~1.0.1",
+    "ejs": "~0.8.5",
     "emailjs": "^0.3.8",
-    "express": "3.4.6",
-    "passwordless": "0.0.1",
-    "passwordless-mongostore": "0.0.2"
+    "express": "~4.2.0",
+    "express-session": "^1.2.1",
+    "morgan": "~1.0.0",
+    "passwordless": "0.0.2",
+    "passwordless-mongostore": "0.0.2",
+    "static-favicon": "~1.0.0"
   }
 }
