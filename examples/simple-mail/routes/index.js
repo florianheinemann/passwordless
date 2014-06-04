@@ -1,5 +1,5 @@
 var express = require('express');
-var passwordless = require('../../../lib');
+var passwordless = require('../../../');
 // var passwordless = require('passwordless');
 var router = express.Router();
 
