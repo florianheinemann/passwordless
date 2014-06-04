@@ -193,8 +193,23 @@ describe('passwordless', function() {
 
 			passwordless.add(deliveryMockVerify, deliveryMockSend());
 
-			it('should throw an exception', function () {
-				expect(function() {passwordless.requestToken()}).to.throw(Error);
+			app.post('/login', passwordless.requestToken(),
+				function(req, res){
+					res.send(200);
+			});
+
+			var agent = request.agent(app);
+
+			it('should throw an exception', function (done) {
+				delivered = [];
+				agent
+					.post('/login')
+					.send( { email: 'alice' } )
+					.expect(500, done);
+			})
+
+			it('should not have sent a token', function () {
+				expect(delivered.length).to.equal(0);
 			})
 		})
 
