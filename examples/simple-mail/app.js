@@ -3,23 +3,21 @@ var path = require('path');
 var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
+var expressSession = require('express-session');
 var bodyParser = require('body-parser');
-var debug = require('debug')('simple-mail');
 
-var passwordless = require('../../');
-// var passwordless = require('passwordless');
+var passwordless = require('passwordless');
 var MongoStore = require('passwordless-mongostore');
 var email   = require("emailjs");
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
 
 // TODO: email setup (has to be changed)
-var yourEmail = 'YOUR MAIL';
-var yourPwd = 'YOUR PWD FOR YOUR MAIL';
-var yourSmtp = 'SMTP FOR YOUR MAIL, e.g.: smtp.gmail.com';
+var yourEmail = 'pwdlessjs@gmail.com';
+var yourPwd = 'HximL>;GKXZYvstQgU2R=83ho';
+var yourSmtp = 'smtp.gmail.com';
 var smtpServer  = email.server.connect({
    user:    yourEmail, 
    password: yourPwd, 
@@ -42,7 +40,7 @@ passwordless.add(
     }, 
     function(tokenToSend, user, callback) {
         // Send out token
-        server.send({
+        smtpServer.send({
            text:    'Hello!\nYou can now access your account here: ' + host + '?token=' + tokenToSend, 
            from:    yourEmail, 
            to:      user,
@@ -65,6 +63,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+app.use(expressSession({secret: '42'}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Passwordless middleware
@@ -93,5 +92,5 @@ app.use(function(err, req, res, next) {
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
-  debug('Express server listening on port ' + server.address().port);
+  console.log('Express server listening on port ' + server.address().port);
 });
