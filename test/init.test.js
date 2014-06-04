@@ -3,8 +3,8 @@
 var expect = require('chai').expect;
 var express = require('express');
 var request = require('supertest');
-var passwordlessInst = require('../lib');
-var Passwordless = require('../lib').Passwordless;
+var passwordlessInst = require('../');
+var Passwordless = require('../').Passwordless;
 var TokenStoreMockAuthOnly = require('./mock/tokenstoreauthonly');
 
 describe('passwordless', function() {

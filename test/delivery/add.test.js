@@ -5,7 +5,7 @@ var express = require('express');
 var request = require('supertest');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
-var Passwordless = require('../../lib').Passwordless;
+var Passwordless = require('../../').Passwordless;
 var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
 
 describe('passwordless', function() {
