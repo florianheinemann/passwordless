@@ -6,7 +6,7 @@ var request = require('supertest');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var cookieSession = require('cookie-session');
-var Passwordless = require('../../lib');
+var Passwordless = require('../../lib').Passwordless;
 var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
 
 describe('passwordless', function() {
@@ -14,7 +14,8 @@ describe('passwordless', function() {
 		describe('login and request resource without session', function(done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly(true));
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly(true));
 
 			app.use(passwordless.acceptToken());
 				

@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 var express = require('express');
 var request = require('supertest');
 var bodyParser = require('body-parser')
-var Passwordless = require('../../lib');
+var Passwordless = require('../../lib').Passwordless;
 var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
@@ -15,7 +15,8 @@ describe('passwordless', function() {
 		it('should not influence the delivery of unrestricted assets', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(passwordless.acceptToken());
 
@@ -32,7 +33,8 @@ describe('passwordless', function() {
 		it('should return an internal server error if DataStore does return error', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(passwordless.acceptToken());
 
@@ -45,10 +47,19 @@ describe('passwordless', function() {
 				.expect(500, done);
 		})
 
+		it('should throw an exception if used without initialized TokenStore', function () {
+
+			var app = express();
+			var passwordless = new Passwordless();
+
+			expect(function() { passwordless.acceptToken()}).to.throw(Error);
+		})
+
 		describe('restricted resources', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(passwordless.acceptToken());
 
@@ -97,18 +108,13 @@ describe('passwordless', function() {
 					.send('token=valid')
 					.expect(401, done);
 			})
-
-			// it('should not give access to restricted resources if supplied token is valid but PARAM', function (done) {
-			// 	request(app)
-			// 		.get('/restricted/valid')
-			// 		.expect(401, done);
-			// })
 		})
 
 		describe('allow POST tokens', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(bodyParser());
 			app.use(passwordless.acceptToken( { allowPost: true } ));
@@ -129,7 +135,8 @@ describe('passwordless', function() {
 		describe('POST tokens without body-parser', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			it('should throw an exception', function (done) {
 				app.use(passwordless.acceptToken( { allowPost: true } ));
@@ -145,62 +152,12 @@ describe('passwordless', function() {
 					.expect(500, done);
 			})
 		})
-
-		// describe('allow PARAM tokens', function() {
-
-		// 	var app = express();
-		// 	var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
-
-		// 	app.use(passwordless.acceptToken( { allowParam: true } ));
-
-		// 	app.get('/restricted/:token', passwordless.restricted(),
-		// 		function(req, res){
-		// 			res.send(200, 'authenticated');
-		// 	});
-
-		// 	it('should give access to restricted resources if supplied token is valid (PARAM) and PARAM is allowed', function (done) {
-		// 		request(app)
-		// 			.get('/restricted/valid')
-		// 			.expect(200, done);
-		// 	})
-		// })
-
-		// describe('allow PARAM and POST tokens', function() {
-
-		// 	var app = express();
-		// 	var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
-
-		// 	app.use(bodyParser());
-		// 	app.use(passwordless.acceptToken( { allowPost: true, allowParam: true } ));
-
-		// 	app.get('/restricted/:token', passwordless.restricted(),
-		// 		function(req, res){
-		// 			res.send(200, 'authenticated');
-		// 	});
-
-		// 	app.post('/restricted', passwordless.restricted(),
-		// 		function(req, res){
-		// 			res.send(200, 'authenticated');
-		// 	});
-
-		// 	it('should give access to restricted resources if supplied token is valid (POST) and POST is allowed', function (done) {
-		// 		request(app)
-		// 			.post('/restricted')
-		// 			.send('token=valid')
-		// 			.expect(200, done);
-		// 	})
-
-		// 	it('should give access to restricted resources if supplied token is valid (PARAM) and PARAM is allowed', function (done) {
-		// 		request(app)
-		// 			.get('/restricted/valid')
-		// 			.expect(200, done);
-		// 	})
-		// })
 		
 		describe('unrestricted resources', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(passwordless.acceptToken());
 
@@ -225,7 +182,8 @@ describe('passwordless', function() {
 		it('should flash an error message if supplied token is invalid and "flashInvalidToken" is supplied', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(cookieParser());
 			app.use(expressSession({ secret: '42' }));
@@ -247,7 +205,8 @@ describe('passwordless', function() {
 		it('should throw an exception if flashInvalidToken is used without flash middleware', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(passwordless.acceptToken({ flashInvalidToken: 'The submitted token is not valid' }));
 

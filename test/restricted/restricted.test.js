@@ -3,7 +3,7 @@
 var expect = require('chai').expect;
 var express = require('express');
 var request = require('supertest');
-var Passwordless = require('../../lib');
+var Passwordless = require('../../lib').Passwordless;
 var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
@@ -14,7 +14,8 @@ describe('passwordless', function() {
 		it('should return 401 if restricted() middleware is used and no authentication provided - 1/2', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
@@ -29,7 +30,8 @@ describe('passwordless', function() {
 		it('should return 401 if restricted() middleware is used and no authentication provided - 2/2', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(passwordless.restricted());
 
@@ -46,7 +48,8 @@ describe('passwordless', function() {
 		it('should allow request if middleware is not in the mount path of express', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use('/restricted', passwordless.restricted());
 
@@ -63,7 +66,8 @@ describe('passwordless', function() {
 		it('should redirect to the given URL if "notAuthRedirect" is provided and user not authorized', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.get('/restricted', passwordless.restricted({ notAuthRedirect: '/login' }),
 				function(req, res){
@@ -79,7 +83,8 @@ describe('passwordless', function() {
 		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided / simple', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login',
 														originUrlParam: 'origin' }),
@@ -96,7 +101,8 @@ describe('passwordless', function() {
 		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided / additional param', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login?mode=test&lang=en',
 																originUrlParam: 'origin' }),
@@ -113,7 +119,8 @@ describe('passwordless', function() {
 		describe('flashUserNotAuth', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(cookieParser());
 			app.use(expressSession({ secret: '42' }));
@@ -156,7 +163,8 @@ describe('passwordless', function() {
 		it('should throw an exception if "flashUserNotAuth" is used without flash middleware', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login',
 																flashUserNotAuth: 'You are not authorized' }), 
@@ -172,7 +180,8 @@ describe('passwordless', function() {
 		it('should throw an exception if "flashUserNotAuth" is used without "notAuthRedirect"', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(cookieParser());
 			app.use(expressSession({ secret: '42' }));
@@ -192,7 +201,8 @@ describe('passwordless', function() {
 		it('should return 401 if no token passed is passed at all', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(passwordless.acceptToken());
 
@@ -209,7 +219,8 @@ describe('passwordless', function() {
 		it('should return 401 if the token passed is invalid', function (done) {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(passwordless.acceptToken());
 
