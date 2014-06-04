@@ -6,7 +6,7 @@ var request = require('supertest');
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
-var Passwordless = require('../../lib');
+var Passwordless = require('../../lib').Passwordless;
 var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
 
 describe('passwordless', function() {
@@ -42,7 +42,8 @@ describe('passwordless', function() {
 		describe('several strategies', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(bodyParser());
 
@@ -108,7 +109,8 @@ describe('passwordless', function() {
 		describe('option(strategy)', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(bodyParser());
 

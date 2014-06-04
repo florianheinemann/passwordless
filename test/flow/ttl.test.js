@@ -6,7 +6,7 @@ var request = require('supertest');
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
-var Passwordless = require('../../lib');
+var Passwordless = require('../../lib').Passwordless;
 var TokenStoreMock = require('../mock/tokenstore');
 
 describe('passwordless', function() {
@@ -41,7 +41,8 @@ describe('passwordless', function() {
 		describe('modified time to live (ttl)', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMock());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMock());
 			passwordless.add('short', deliveryMockVerify, deliveryMockSend(), { ttl: 10 });
 			passwordless.add('long', deliveryMockVerify, deliveryMockSend());
 

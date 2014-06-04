@@ -6,7 +6,7 @@ var request = require('supertest');
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
-var Passwordless = require('../../lib');
+var Passwordless = require('../../lib').Passwordless;
 var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
 var flash = require('connect-flash');
 
@@ -43,7 +43,8 @@ describe('passwordless', function() {
 		describe('default delivery', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly(false, function(token) {
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly(false, function(token) {
 				lastStoredToken = token;
 			}));
 
@@ -154,7 +155,8 @@ describe('passwordless', function() {
 		describe('different tokenAlgorithm', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			app.use(bodyParser());
 
@@ -182,10 +184,25 @@ describe('passwordless', function() {
 			})
 		})
 
+		describe('not initialized', function() {
+
+			var app = express();
+			var passwordless = new Passwordless();
+
+			app.use(bodyParser());
+
+			passwordless.add(deliveryMockVerify, deliveryMockSend());
+
+			it('should throw an exception', function () {
+				expect(function() {passwordless.requestToken()}).to.throw(Error);
+			})
+		})
+
 		describe('requestToken(options)', function() {
 			describe('option:input', function() {
 				var app = express();
-				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMockAuthOnly());
 
 				app.use(bodyParser());
 
@@ -236,7 +253,8 @@ describe('passwordless', function() {
 
 			describe('option:allowGet', function() {
 				var app = express();
-				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMockAuthOnly());
 
 				passwordless.add('email', deliveryMockVerify, deliveryMockSend('email'));
 				passwordless.add('sms', deliveryMockVerify, deliveryMockSend('sms'));
@@ -265,7 +283,8 @@ describe('passwordless', function() {
 
 			describe('option:unknownUserRedirect', function() {
 				var app = express();
-				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMockAuthOnly());
 
 				app.use(bodyParser());
 
@@ -318,7 +337,8 @@ describe('passwordless', function() {
 
 			describe('option:unknownUserFlash', function() {
 				var app = express();
-				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMockAuthOnly());
 				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.use(bodyParser());
@@ -364,7 +384,8 @@ describe('passwordless', function() {
 
 			describe('option:unknownUserFlash (without flash middleware)', function() {
 				var app = express();
-				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMockAuthOnly());
 				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.use(bodyParser());
@@ -391,7 +412,8 @@ describe('passwordless', function() {
 
 			describe('option:unknownUserFlash (without option:unknownUserRedirect)', function() {
 				var app = express();
-				var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMockAuthOnly());
 				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.use(bodyParser());
@@ -419,7 +441,8 @@ describe('passwordless', function() {
 		describe('without bodyParser', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 
 			passwordless.add(deliveryMockVerify, deliveryMockSend());
 
@@ -441,7 +464,8 @@ describe('passwordless', function() {
 		describe('without added strategy', function() {
 
 			var app = express();
-			var passwordless = new Passwordless(new TokenStoreMockAuthOnly());
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMockAuthOnly());
 			app.use(bodyParser());
 
 			it('should return a 500 page', function (done) {
