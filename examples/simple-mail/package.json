@@ -1,0 +1,20 @@
+{
+  "name": "testapp",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "~1.0.0",
+    "cookie-parser": "~1.0.1",
+    "debug": "~0.7.4",
+    "ejs": "~0.8.5",
+    "emailjs": "^0.3.8",
+    "express": "~4.2.0",
+    "morgan": "~1.0.0",
+    "passwordless": "0.0.2",
+    "passwordless-mongostore": "0.0.2",
+    "static-favicon": "~1.0.0"
+  }
+}
