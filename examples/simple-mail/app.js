@@ -15,9 +15,9 @@ var routes = require('./routes/index');
 var app = express();
 
 // TODO: email setup (has to be changed)
-var yourEmail = 'pwdlessjs@gmail.com';
-var yourPwd = 'HximL>;GKXZYvstQgU2R=83ho';
-var yourSmtp = 'smtp.gmail.com';
+var yourEmail = 'YOUR EMAIL ACCOUNT';
+var yourPwd = 'YOUR EMAIL PASSWORD';
+var yourSmtp = 'SMTP server, such as: smtp.gmail.com';
 var smtpServer  = email.server.connect({
    user:    yourEmail, 
    password: yourPwd, 
