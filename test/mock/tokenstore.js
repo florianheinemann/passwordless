@@ -1,7 +1,7 @@
 'use strict';
 
 var util = require('util');
-var TokenStore = require('../../lib').TokenStore;
+var TokenStore = require('../../').TokenStore;
 
 function TokenStoreMock() {
 	TokenStore.call(this);
