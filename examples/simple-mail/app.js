@@ -26,7 +26,7 @@ var smtpServer  = email.server.connect({
 });
 
 // TODO: MongoDB setup (given default can be used)
-var pathToMongoDb = 'mongodb://localhost/passwordless-mongostore-simple-mail';
+var pathToMongoDb = 'mongodb://localhost/passwordless-simple-mail';
 
 // TODO: Path to be send via email
 var host = 'http://localhost:3000/';
