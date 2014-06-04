@@ -7,7 +7,7 @@
     <p>
     User: 
     <% if(user) { %>
-    	<%= user %> (logged in <a href='/logout'>logout</a>)
+    	<%= user %> (<a href='/logout'>logout</a>)
     <% } else { %>
     	Not logged in
     <% } %>
@@ -19,8 +19,10 @@
       <br><input type="submit" value="Login / Register">
     </form>
     </p>
-    <p>
-    	<a href='/'>Back to homepage</a>
-    </p>
+    <ul>
+      <li>
+        <a href='/'>Back to homepage</a>
+      </li>
+    </ul>
   </body>
 </html>

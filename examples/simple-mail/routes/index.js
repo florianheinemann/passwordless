@@ -1,4 +1,6 @@
 var express = require('express');
+var passwordless = require('../../../lib');
+// var passwordless = require('passwordless');
 var router = express.Router();
 
 /* GET home page. */
