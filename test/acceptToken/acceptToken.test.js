@@ -47,12 +47,20 @@ describe('passwordless', function() {
 				.expect(500, done);
 		})
 
-		it('should throw an exception if used without initialized TokenStore', function () {
+		it('should throw an exception if used without initialized TokenStore', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
 
-			expect(function() { passwordless.acceptToken()}).to.throw(Error);
+			app.use(passwordless.acceptToken());
+
+			app.get('/unrestricted', function(req, res) {
+					res.send(200);
+			});
+
+			request(app)
+				.get('/unrestricted')
+				.expect(500, done);
 		})
 
 		describe('restricted resources', function() {
