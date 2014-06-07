@@ -13,31 +13,37 @@ describe('passwordless', function() {
 	describe('requestToken', function() {
 
 		var delivered = [];
-		var lastStoredToken = null;
-		var deliveryMockVerify = function(contactToVerify, done) {
-				setTimeout(function() {
-					if(contactToVerify === 'error') {
-						done('error', null);
-					} else if (contactToVerify === 'unknown') {
-						done(null, null);
-					} else {
-						done(null, 'UID/' + contactToVerify);
-					}
-				}, 0);
-			};
-
 		var deliveryMockSend = function(name) {
-			return function(tokenToSend, user, done) {
+			return function(tokenToSend, uid, done) {
 					setTimeout(function() {
-						if(user === 'UID/deliveryError') {
+						if(uid === 107) {
 							return done('error');
 						}
 
-						delivered.push([tokenToSend, user, name]);
+						delivered.push({ token: tokenToSend, user: uid, delivery: name });
 						done();
 					}, 0);
 				}
 			}
+
+		var userDb = [
+			{id: 101, email: 'marc@example.com', phone: '+1-555-555-5555'},
+			{id: 103, email: 'alice@example.com', phone: '+1-777-777-7777'}
+		];
+
+		var findUser = function(user, delivery, callback) {
+			if(user === 'error') {
+				return callback('Some error', null);
+			}
+			for (var i = userDb.length - 1; i >= 0; i--) {
+				if(delivery === 'email' && userDb[i].email === user) {
+					return callback(null, userDb[i].id);
+				} else if(delivery === 'sms' && userDb[i].phone === user) {
+					return callback(null, userDb[i].id);
+				}
+			};
+			callback(null, null);
+		}
 
 		describe('several strategies', function() {
 
@@ -47,10 +53,10 @@ describe('passwordless', function() {
 
 			app.use(bodyParser());
 
-			passwordless.add('email', deliveryMockVerify, deliveryMockSend('email'));
-			passwordless.add('sms', deliveryMockVerify, deliveryMockSend('sms'));
+			passwordless.addDelivery('email', deliveryMockSend('email'));
+			passwordless.addDelivery('sms', deliveryMockSend('sms'));
 
-			app.post('/login', passwordless.requestToken(),
+			app.post('/login', passwordless.requestToken(findUser),
 				function(req, res){
 					res.send(200);
 			});
@@ -58,10 +64,10 @@ describe('passwordless', function() {
 			var agent1 = request.agent(app);
 			var agent2 = request.agent(app);
 
-			it('should return 400 if the field "strategy" is not provided', function (done) {
+			it('should return 400 if the field "delivery" is not provided', function (done) {
 				agent1
 					.post('/login')
-					.send( { email: 'alice' } )
+					.send( { user: 'alice@example.com' } )
 					.expect(400, done);
 			})
 
@@ -69,10 +75,10 @@ describe('passwordless', function() {
 				expect(delivered.length).to.equal(0);
 			})
 
-			it('should return 400 if the field "strategy" contains an invalid value', function (done) {
+			it('should return 400 if the field "delivery" contains an invalid value', function (done) {
 				agent1
 					.post('/login')
-					.send( { email: 'alice', strategy: 'snailmail' } )
+					.send( { user: 'alice@example.com', delivery: 'snailmail' } )
 					.expect(400, done);
 			})
 
@@ -80,33 +86,33 @@ describe('passwordless', function() {
 				expect(delivered.length).to.equal(0);
 			})
 
-			it('should deliver token for a valid strategy', function (done) {
+			it('should deliver token for a valid delivery method', function (done) {
 				agent1
 					.post('/login')
-					.send( { email: 'alice', strategy: 'sms' } )
+					.send( { user: '+1-777-777-7777', delivery: 'sms' } )
 					.expect(200, done);
 			})
 
 			it('should have sent and stored token', function () {
 				expect(delivered.length).to.equal(1);
-				expect(delivered[0][2]).to.equal('sms');
+				expect(delivered[0].delivery).to.equal('sms');
 			})
 
 
-			it('should deliver token for a valid strategy (2)', function (done) {
+			it('should deliver token for a valid delivery method (2)', function (done) {
 				agent2
 					.post('/login')
-					.send( { email: 'alice', strategy: 'email' } )
+					.send( { user: 'alice@example.com', delivery: 'email' } )
 					.expect(200, done);
 			})
 
 			it('should have sent and stored token', function () {
 				expect(delivered.length).to.equal(2);
-				expect(delivered[1][2]).to.equal('email');
+				expect(delivered[1].delivery).to.equal('email');
 			})
 		})
 
-		describe('option(strategy)', function() {
+		describe('option(deliveryField)', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
@@ -114,27 +120,27 @@ describe('passwordless', function() {
 
 			app.use(bodyParser());
 
-			passwordless.add('email', deliveryMockVerify, deliveryMockSend('email'));
-			passwordless.add('sms', deliveryMockVerify, deliveryMockSend('sms'));
+			passwordless.addDelivery('email', deliveryMockSend('email'));
+			passwordless.addDelivery('sms', deliveryMockSend('sms'));
 
-			app.post('/login', passwordless.requestToken({strategy: 'delivery'}),
+			app.post('/login', passwordless.requestToken(findUser, {deliveryField: 'method'}),
 				function(req, res){
 					res.send(200);
 			});
 
 			var agent = request.agent(app);
 
-			it('should deliver token for a valid strategy', function (done) {
+			it('should deliver token for a valid delivery strategy', function (done) {
 				delivered = [];
 				agent
 					.post('/login')
-					.send( { email: 'alice', delivery: 'sms' } )
+					.send( { user: '+1-777-777-7777', method: 'sms' } )
 					.expect(200, done);
 			})
 
 			it('should have sent and stored token', function () {
 				expect(delivered.length).to.equal(1);
-				expect(delivered[0][2]).to.equal('sms');
+				expect(delivered[0].delivery).to.equal('sms');
 			})
 		})
 	})

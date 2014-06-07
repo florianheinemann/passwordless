@@ -36,19 +36,22 @@ describe('passwordless', function() {
 				return callback('Some error', null);
 			}
 			for (var i = userDb.length - 1; i >= 0; i--) {
-				if(userDb[i].email === user) {
+				if(delivery === 'email' && userDb[i].email === user) {
+					return callback(null, userDb[i].id);
+				} else if(delivery === 'sms' && userDb[i].phone === user) {
 					return callback(null, userDb[i].id);
 				}
 			};
 			callback(null, null);
 		}
 
-		describe('standard', function() {
+		describe('two different delivery methods', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock({integration:true}));
-			passwordless.addDelivery(deliveryMockSend());
+			passwordless.addDelivery('email', deliveryMockSend('email'));
+			passwordless.addDelivery('sms', deliveryMockSend('sms'));
 
 			app.use(bodyParser());
 			app.use(cookieParser());
@@ -56,11 +59,6 @@ describe('passwordless', function() {
 
 			app.use(passwordless.sessionSupport());
 			app.use(passwordless.acceptToken());
-
-			app.get('/unrestricted',
-				function(req, res){
-					res.send(200);
-			});
 
 			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
@@ -72,29 +70,13 @@ describe('passwordless', function() {
 					res.send(200);
 			});
 
-			app.get('/logout', passwordless.logout(),
-				function(req, res){
-					res.send(200);
-			});
+			var agent1 = request.agent(app);
+			var agent2 = request.agent(app);
 
-			var agent = request.agent(app);
-
-			it('should allow access to unrestricted resources', function (done) {
-				agent
-					.get('/unrestricted')
-					.expect(200, done);
-			})
-
-			it('should not allow access to restricted resources', function (done) {
-				agent
-					.get('/restricted')
-					.expect(401, done);
-			})
-
-			it('should verify a proper user', function (done) {
-				agent
+			it('should verify a user via email', function (done) {
+				agent1
 					.post('/login')
-					.send( { user: 'alice@example.com' } )
+					.send( { user: 'alice@example.com', delivery: 'email' } )
 					.expect(200, done);
 			})
 
@@ -102,36 +84,57 @@ describe('passwordless', function() {
 				expect(delivered.length).to.equal(1);
 				expect(delivered[0].token).to.have.length.above(0);
 				expect(delivered[0].user).to.equal(103);
+				expect(delivered[0].delivery).to.equal('email');
 			})
 
-			it('should still not allow access to restricted resources', function (done) {
-				agent
+			it('should verify a user via sms', function (done) {
+				agent2
+					.post('/login')
+					.send( { user: '+1-555-555-5555', delivery: 'sms' } )
+					.expect(200, done);
+			})
+
+			it('should have sent a token', function () {
+				expect(delivered.length).to.equal(2);
+				expect(delivered[1].token).to.have.length.above(0);
+				expect(delivered[1].user).to.equal(101);
+				expect(delivered[1].delivery).to.equal('sms');
+			})
+
+			it('should still not allow access to restricted resources - 1/2', function (done) {
+				agent1
 					.get('/restricted')
 					.expect(401, done);
 			})
 
-			it('should allow access to a restricted resource with a proper token', function (done) {
-				agent
+			it('should still not allow access to restricted resources - 2/2', function (done) {
+				agent2
+					.get('/restricted')
+					.expect(401, done);
+			})
+
+			it('should allow access to a restricted resource with a proper token - 1/2', function (done) {
+				agent1
 					.get('/restricted?token=' + delivered[0].token)
 					.expect(200, done);
 			})
 
-			it('should now allow access to a restricted resource without a token', function (done) {
-				agent
+			it('should allow access to a restricted resource with a proper token - 2/2', function (done) {
+				agent2
+					.get('/restricted?token=' + delivered[1].token)
+					.expect(200, done);
+			})
+
+			it('should now allow access to a restricted resource without a token - 1/2', function (done) {
+				agent1
 					.get('/restricted')
 					.expect(200, done);
 			})
 
-			it('should successfully log out', function (done) {
-				agent
-					.get('/logout')
-					.expect(200, done);
-			})
-
-			it('should not anymore allow access to restricted resources', function (done) {
-				agent
+			it('should now allow access to a restricted resource without a token - 2/2', function (done) {
+				agent2
 					.get('/restricted')
-					.expect(401, done);
+					.expect(200, done);
 			})
 		})
 	})

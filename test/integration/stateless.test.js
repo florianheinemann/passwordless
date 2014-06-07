@@ -8,40 +8,45 @@ var Passwordless = require('../../').Passwordless;
 var TokenStoreMock = require('../mock/tokenstoremock');
 
 describe('passwordless', function() {
-	describe('flow', function() {
+	describe('integration', function() {
 
 		var delivered = [];
-		var deliveryMockVerify = function(contactToVerify, done) {
-				setTimeout(function() {
-					if(contactToVerify === 'error') {
-						done('error', null);
-					} else if (contactToVerify === 'unknown') {
-						done(null, null);
-					} else {
-						done(null, 'UID/' + contactToVerify);
-					}
-				}, 0);
-			};
-
 		var deliveryMockSend = function(name) {
-			return function(tokenToSend, user, done) {
+			return function(tokenToSend, uid, done) {
 					setTimeout(function() {
-						if(user === 'UID/deliveryError') {
+						if(uid === 107) {
 							return done('error');
 						}
 
-						delivered.push([tokenToSend, user, name]);
+						delivered.push({ token: tokenToSend, user: uid, delivery: name });
 						done();
 					}, 0);
 				}
 			}
+
+		var userDb = [
+			{id: 101, email: 'marc@example.com', phone: '+1-555-555-5555'},
+			{id: 103, email: 'alice@example.com', phone: '+1-777-777-7777'}
+		];
+
+		var findUser = function(user, delivery, callback) {
+			if(user === 'error') {
+				return callback('Some error', null);
+			}
+			for (var i = userDb.length - 1; i >= 0; i--) {
+				if(userDb[i].email === user) {
+					return callback(null, userDb[i].id);
+				}
+			};
+			callback(null, null);
+		}
 
 		describe('stateless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock({integration:true}));
-			passwordless.add(deliveryMockVerify, deliveryMockSend());
+			passwordless.addDelivery(deliveryMockSend());
 
 			app.use(bodyParser());
 
@@ -57,7 +62,7 @@ describe('passwordless', function() {
 					res.send(200, 'authenticated');
 			});
 
-			app.post('/login', passwordless.requestToken(),
+			app.post('/login', passwordless.requestToken(findUser),
 				function(req, res){
 					res.send(200);
 			});
@@ -84,14 +89,14 @@ describe('passwordless', function() {
 			it('should verify a proper user', function (done) {
 				agent
 					.post('/login')
-					.send( { email: 'alice' } )
+					.send( { user: 'alice@example.com' } )
 					.expect(200, done);
 			})
 
 			it('should have sent a token', function () {
 				expect(delivered.length).to.equal(1);
-				expect(delivered[0][0]).to.have.length.above(0);
-				expect(delivered[0][1]).to.equal('UID/alice');
+				expect(delivered[0].token).to.have.length.above(0);
+				expect(delivered[0].user).to.equal(103);
 			})
 
 			it('should still not allow access to restricted resources', function (done) {
@@ -102,7 +107,7 @@ describe('passwordless', function() {
 
 			it('should allow access to a restricted resource with a proper token', function (done) {
 				agent
-					.get('/restricted?token=' + delivered[0][0])
+					.get('/restricted?token=' + delivered[0].token)
 					.expect(200, done);
 			})
 
@@ -114,7 +119,7 @@ describe('passwordless', function() {
 
 			it('should again allow access to a restricted resource with the same token', function (done) {
 				agent
-					.get('/restricted?token=' + delivered[0][0])
+					.get('/restricted?token=' + delivered[0].token)
 					.expect(200, done);
 			})
 		})

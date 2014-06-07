@@ -9,23 +9,11 @@ var Passwordless = require('../../').Passwordless;
 var TokenStoreMock = require('../mock/tokenstoremock');
 
 describe('passwordless', function() {
-	describe('add', function() {
-
-		var deliveryMockVerify = function(contactToVerify, done) {
-				setTimeout(function() {
-					if(contactToVerify === 'error') {
-						done('error', null);
-					} else if (contactToVerify === 'unknown') {
-						done(null, null);
-					} else {
-						done(null, 'UID/' + contactToVerify);
-					}					
-				}, 0);
-			};
+	describe('addDelivery', function() {
 
 		var deliveryMockSend = function(tokenToSend, user, done) {
 				setTimeout(function() {
-					delivered.push([tokenToSend, user]);
+					delivered.push({ token: tokenToSend, user: user });
 					done();
 				}, 0);
 			};
@@ -33,44 +21,28 @@ describe('passwordless', function() {
 		it('shall work with correct default usage', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			passwordless.add(deliveryMockVerify, deliveryMockSend);
+			passwordless.addDelivery(deliveryMockSend);
 		});
 
 		it('shall work with correct default usage incl. options', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			passwordless.add(deliveryMockVerify, deliveryMockSend, {ttl: 1000});
+			passwordless.addDelivery(deliveryMockSend, {ttl: 1000});
 		});
 
-		it('shall throw an Error if parameter is missing - 1/4', function () {
+		it('shall throw an Error if parameter is missing - 1/2', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 			expect(function() {
-				passwordless.add(deliveryMockVerify)
+				passwordless.addDelivery()
 			}).to.throw(Error);
 		});
 
-		it('shall throw an Error if parameter is missing - 2/4', function () {
+		it('shall throw an Error if parameter is missing - 2/2', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 			expect(function() {
-				passwordless.add()
-			}).to.throw(Error);
-		});
-
-		it('shall throw an Error if parameter is missing - 3/4', function () {
-			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMock());
-			expect(function() {
-				passwordless.add('email', deliveryMockVerify)
-			}).to.throw(Error);
-		});
-
-		it('shall throw an Error if parameter is missing - 4/4', function () {
-			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMock());
-			expect(function() {
-				passwordless.add('email')
+				passwordless.addDelivery('email')
 			}).to.throw(Error);
 		});
 
@@ -78,7 +50,7 @@ describe('passwordless', function() {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 			expect(function() {
-				passwordless.add('email', deliveryMockVerify, deliveryMockSend, {ttl: '10'})
+				passwordless.addDelivery('email', deliveryMockSend, {ttl: '10'})
 			}).to.throw(Error);
 		});
 
@@ -86,63 +58,63 @@ describe('passwordless', function() {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 			expect(function() {
-				passwordless.add('email', deliveryMockVerify, deliveryMockSend, {tokenAlgorithm: '10'})
+				passwordless.addDelivery('email', deliveryMockSend, {tokenAlgorithm: '10'})
 			}).to.throw(Error);
 		});
 
 		it('shall throw an Error if a second default delivery method is added', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			passwordless.add(deliveryMockVerify, deliveryMockSend);
+			passwordless.addDelivery(deliveryMockSend);
 			expect(function() {
-				passwordless.add(deliveryMockVerify, deliveryMockSend)
+				passwordless.addDelivery(deliveryMockSend)
 			}).to.throw(Error);
 		});
 
 		it('shall work with correct named delivery method usage', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			passwordless.add('email', deliveryMockVerify, deliveryMockSend);
+			passwordless.addDelivery('email', deliveryMockSend);
 		});
 
 		it('shall work with correct named delivery method usage incl. options', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			passwordless.add('email', deliveryMockVerify, deliveryMockSend, { ttl: 1000 });
+			passwordless.addDelivery('email', deliveryMockSend, { ttl: 1000 });
 		});
 
 		it('shall throw an Error if first an unnamed and then a named method is added', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			passwordless.add(deliveryMockVerify, deliveryMockSend);
+			passwordless.addDelivery(deliveryMockSend);
 			expect(function() {
-				passwordless.add('email', deliveryMockVerify, deliveryMockSend)
+				passwordless.addDelivery('email', deliveryMockSend)
 			}).to.throw(Error);
 		});
 
 		it('shall throw an Error if first a named and then an unamed method is added', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			passwordless.add('email', deliveryMockVerify, deliveryMockSend);
+			passwordless.addDelivery('email', deliveryMockSend);
 			expect(function() {
-				passwordless.add(deliveryMockVerify, deliveryMockSend)
+				passwordless.addDelivery(deliveryMockSend)
 			}).to.throw(Error);
 		});
 
 		it('shall work for two or more named delivery methods', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			passwordless.add('email', deliveryMockVerify, deliveryMockSend);
-			passwordless.add('sms', deliveryMockVerify, deliveryMockSend);
-			passwordless.add('phone', deliveryMockVerify, deliveryMockSend);
+			passwordless.addDelivery('email', deliveryMockSend);
+			passwordless.addDelivery('sms', deliveryMockSend);
+			passwordless.addDelivery('phone', deliveryMockSend);
 		});
 
 		it('shall throw an Error if two times the same named method is added', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			passwordless.add('email', deliveryMockVerify, deliveryMockSend);
+			passwordless.addDelivery('email', deliveryMockSend);
 			expect(function() {
-				passwordless.add('email', deliveryMockVerify, deliveryMockSend)
+				passwordless.addDelivery('email', deliveryMockSend)
 			}).to.throw(Error);
 		});
 	});
