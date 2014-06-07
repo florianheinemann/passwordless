@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var cookieSession = require('cookie-session');
 var Passwordless = require('../../').Passwordless;
-var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
+var TokenStoreMock = require('../mock/tokenstoremock');
 
 describe('passwordless', function() {
 	describe('authenticate() [stateless test]', function() {
@@ -15,7 +15,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly(true));
+			passwordless.init(new TokenStoreMock());
 
 			app.use(passwordless.acceptToken());
 				

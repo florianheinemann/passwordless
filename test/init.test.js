@@ -5,7 +5,7 @@ var express = require('express');
 var request = require('supertest');
 var passwordlessInst = require('../');
 var Passwordless = require('../').Passwordless;
-var TokenStoreMockAuthOnly = require('./mock/tokenstoreauthonly');
+var TokenStoreMock = require('./mock/tokenstoremock');
 
 describe('passwordless', function() {
 	describe('singleton', function() {
@@ -33,12 +33,12 @@ describe('passwordless', function() {
 		
 		it('should proceed if called correctly', function () {
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 		})
 
 		it('should proceed if called correctly and allow for options', function () {
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly(), { userProperty: 'test' });
+			passwordless.init(new TokenStoreMock(), { userProperty: 'test' });
 		})
 	})
 });

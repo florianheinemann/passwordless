@@ -7,7 +7,7 @@ var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var Passwordless = require('../../').Passwordless;
-var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
+var TokenStoreMock = require('../mock/tokenstoremock');
 
 describe('passwordless', function() {
 	describe('requestToken', function() {
@@ -43,7 +43,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(bodyParser());
 
@@ -110,7 +110,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(bodyParser());
 

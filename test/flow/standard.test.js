@@ -7,7 +7,7 @@ var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var Passwordless = require('../../').Passwordless;
-var TokenStoreMock = require('../mock/tokenstore');
+var TokenStoreMock = require('../mock/tokenstoremock');
 
 describe('passwordless', function() {
 	describe('flow', function() {
@@ -113,7 +113,7 @@ describe('passwordless', function() {
 
 			it('should now allow access to a restricted resource without a token', function (done) {
 				agent
-					.get('/restricted?token=' + delivered[0][0])
+					.get('/restricted')
 					.expect(200, done);
 			})
 

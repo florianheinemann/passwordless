@@ -5,7 +5,7 @@ var express = require('express');
 var request = require('supertest');
 var bodyParser = require('body-parser')
 var Passwordless = require('../../').Passwordless;
-var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
+var TokenStoreMock = require('../mock/tokenstoremock');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var flash = require('connect-flash');
@@ -16,7 +16,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(passwordless.acceptToken());
 
@@ -34,7 +34,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(passwordless.acceptToken());
 
@@ -67,7 +67,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(passwordless.acceptToken());
 
@@ -122,7 +122,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(bodyParser());
 			app.use(passwordless.acceptToken( { allowPost: true } ));
@@ -144,7 +144,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			it('should throw an exception', function (done) {
 				app.use(passwordless.acceptToken( { allowPost: true } ));
@@ -165,7 +165,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(passwordless.acceptToken());
 
@@ -174,13 +174,13 @@ describe('passwordless', function() {
 					res.send(200);
 			});
 
-			it('should just deliver unrestricted resources if supplied token is empty', function (done) {
+			it('should deliver unrestricted resources if supplied token is empty', function (done) {
 				request(app)
 					.get('/unrestricted?token=')
 					.expect(200, done);
 			})
 
-			it('should just deliver unrestricted resources if supplied token is invalid', function (done) {
+			it('should deliver unrestricted resources if supplied token is invalid', function (done) {
 				request(app)
 					.get('/unrestricted?token=invalid')
 					.expect(200, done);
@@ -191,7 +191,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(cookieParser());
 			app.use(expressSession({ secret: '42' }));
@@ -214,7 +214,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(passwordless.acceptToken({ flashInvalidToken: 'The submitted token is not valid' }));
 

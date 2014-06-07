@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 var express = require('express');
 var request = require('supertest');
 var Passwordless = require('../../').Passwordless;
-var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
+var TokenStoreMock = require('../mock/tokenstoremock');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var flash = require('connect-flash');
@@ -15,7 +15,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
@@ -31,7 +31,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(passwordless.restricted());
 
@@ -49,7 +49,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use('/restricted', passwordless.restricted());
 
@@ -67,7 +67,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.get('/restricted', passwordless.restricted({ notAuthRedirect: '/login' }),
 				function(req, res){
@@ -84,7 +84,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login',
 														originUrlParam: 'origin' }),
@@ -102,7 +102,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login?mode=test&lang=en',
 																originUrlParam: 'origin' }),
@@ -120,7 +120,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(cookieParser());
 			app.use(expressSession({ secret: '42' }));
@@ -164,7 +164,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login',
 																flashUserNotAuth: 'You are not authorized' }), 
@@ -181,7 +181,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(cookieParser());
 			app.use(expressSession({ secret: '42' }));
@@ -202,7 +202,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(passwordless.acceptToken());
 
@@ -220,7 +220,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(passwordless.acceptToken());
 

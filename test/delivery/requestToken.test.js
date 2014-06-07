@@ -7,14 +7,13 @@ var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var Passwordless = require('../../').Passwordless;
-var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
+var TokenStoreMock = require('../mock/tokenstoremock');
 var flash = require('connect-flash');
 
 describe('passwordless', function() {
 	describe('requestToken', function() {
 
 		var delivered = [];
-		var lastStoredToken = null;
 		var deliveryMockVerify = function(contactToVerify, done) {
 				setTimeout(function() {
 					if(contactToVerify === 'error') {
@@ -44,9 +43,8 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly(false, function(token) {
-				lastStoredToken = token;
-			}));
+			var store = new TokenStoreMock();
+			passwordless.init(store);
 
 			app.use(bodyParser());
 
@@ -65,9 +63,12 @@ describe('passwordless', function() {
 					.expect(400, done);
 			})
 
-			it('should not have sent or stored any tokens so far', function () {
+			it('should not have sent or stored any tokens so far', function (done) {
 				expect(delivered.length).to.equal(0);
-				expect(lastStoredToken).to.not.exist;
+				store.length(function(err, count) {
+					expect(count).to.equal(0);
+					done();
+				});
 			})
 
 			it('should return 401 in case of an empty user', function (done) {
@@ -77,9 +78,12 @@ describe('passwordless', function() {
 					.expect(401, done);
 			})
 
-			it('should not have sent or stored any tokens so far', function () {
+			it('should not have sent or stored any tokens so far', function (done) {
 				expect(delivered.length).to.equal(0);
-				expect(lastStoredToken).to.not.exist;
+				store.length(function(err, count) {
+					expect(count).to.equal(0);
+					done();
+				});
 			})
 
 			it('should return 401 in case of an unknown user', function (done) {
@@ -89,9 +93,12 @@ describe('passwordless', function() {
 					.expect(401, done);
 			})
 
-			it('should not have sent or stored any tokens so far', function () {
+			it('should not have sent or stored any tokens so far', function (done) {
 				expect(delivered.length).to.equal(0);
-				expect(lastStoredToken).to.not.exist;
+				store.length(function(err, count) {
+					expect(count).to.equal(0);
+					done();
+				});
 			})
 
 			it('should return 500 in case of an error on the verification layer', function (done) {
@@ -101,9 +108,12 @@ describe('passwordless', function() {
 					.expect(500, done);
 			})
 
-			it('should not have sent or stored any tokens so far', function () {
+			it('should not have sent or stored any tokens so far', function (done) {
 				expect(delivered.length).to.equal(0);
-				expect(lastStoredToken).to.not.exist;
+				store.length(function(err, count) {
+					expect(count).to.equal(0);
+					done();
+				});
 			})	
 
 			it('should return 500 in case of an error on the delivery layer', function (done) {
@@ -113,9 +123,11 @@ describe('passwordless', function() {
 					.expect(500, done);
 			})
 
-			it('should not have sent any tokens so far', function () {
+			it('should not have sent any tokens so far', function (done) {
 				expect(delivered.length).to.equal(0);
-				lastStoredToken = null;
+				store.clear(function(err) {
+					done();
+				});
 			})
 
 			it('should verify a proper user', function (done) {
@@ -125,12 +137,16 @@ describe('passwordless', function() {
 					.expect(200, done);
 			})
 
-			it('should have sent and stored token', function () {
+			it('should have sent and stored token', function (done) {
 				expect(delivered.length).to.equal(1);
 				expect(delivered[0][0]).to.have.length.above(20);
 				expect(delivered[0][1]).to.equal('UID/alice');
-				expect(lastStoredToken).to.exist;
-				lastStoredToken = null;
+				store.length(function(err, count) {
+					expect(count).to.equal(1);
+					store.clear(function(err) {
+						done();
+					});
+				});
 			})
 
 			it('should verify another proper user', function (done) {
@@ -140,11 +156,16 @@ describe('passwordless', function() {
 					.expect(200, done);
 			})
 
-			it('should have sent and stored token', function () {
+			it('should have sent and stored token', function (done) {
 				expect(delivered.length).to.equal(2);
 				expect(delivered[1][0]).to.have.length.above(20);
 				expect(delivered[1][1]).to.equal('UID/mark');
-				expect(lastStoredToken).to.exist;
+				store.length(function(err, count) {
+					expect(count).to.equal(1);
+					store.clear(function(err) {
+						done();
+					});
+				});
 			})
 
 			it('should create random tokens', function () {
@@ -156,7 +177,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			app.use(bodyParser());
 
@@ -217,7 +238,7 @@ describe('passwordless', function() {
 			describe('option:input', function() {
 				var app = express();
 				var passwordless = new Passwordless();
-				passwordless.init(new TokenStoreMockAuthOnly());
+				passwordless.init(new TokenStoreMock());
 
 				app.use(bodyParser());
 
@@ -266,10 +287,14 @@ describe('passwordless', function() {
 				})
 			})
 
+			describe('option:referrer', function() {
+				it('should be tested');
+			});
+
 			describe('option:allowGet', function() {
 				var app = express();
 				var passwordless = new Passwordless();
-				passwordless.init(new TokenStoreMockAuthOnly());
+				passwordless.init(new TokenStoreMock());
 
 				passwordless.add('email', deliveryMockVerify, deliveryMockSend('email'));
 				passwordless.add('sms', deliveryMockVerify, deliveryMockSend('sms'));
@@ -299,7 +324,7 @@ describe('passwordless', function() {
 			describe('option:unknownUserRedirect', function() {
 				var app = express();
 				var passwordless = new Passwordless();
-				passwordless.init(new TokenStoreMockAuthOnly());
+				passwordless.init(new TokenStoreMock());
 
 				app.use(bodyParser());
 
@@ -353,7 +378,7 @@ describe('passwordless', function() {
 			describe('option:unknownUserFlash', function() {
 				var app = express();
 				var passwordless = new Passwordless();
-				passwordless.init(new TokenStoreMockAuthOnly());
+				passwordless.init(new TokenStoreMock());
 				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.use(bodyParser());
@@ -400,7 +425,7 @@ describe('passwordless', function() {
 			describe('option:unknownUserFlash (without flash middleware)', function() {
 				var app = express();
 				var passwordless = new Passwordless();
-				passwordless.init(new TokenStoreMockAuthOnly());
+				passwordless.init(new TokenStoreMock());
 				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.use(bodyParser());
@@ -428,7 +453,7 @@ describe('passwordless', function() {
 			describe('option:unknownUserFlash (without option:unknownUserRedirect)', function() {
 				var app = express();
 				var passwordless = new Passwordless();
-				passwordless.init(new TokenStoreMockAuthOnly());
+				passwordless.init(new TokenStoreMock());
 				passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 				app.use(bodyParser());
@@ -457,7 +482,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 
 			passwordless.add(deliveryMockVerify, deliveryMockSend());
 
@@ -480,7 +505,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMockAuthOnly());
+			passwordless.init(new TokenStoreMock());
 			app.use(bodyParser());
 
 			it('should return a 500 page', function (done) {

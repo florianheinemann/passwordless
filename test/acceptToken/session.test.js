@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var cookieSession = require('cookie-session');
 var Passwordless = require('../../').Passwordless;
-var TokenStoreMockAuthOnly = require('../mock/tokenstoreauthonly');
+var TokenStoreMock = require('../mock/tokenstoremock');
 
 describe('passwordless', function() {
 	describe('acceptToken() [session test]', function() {
@@ -16,7 +16,7 @@ describe('passwordless', function() {
 			var loginAndPreserveTests = function(sessionMiddleware) {
 				var app = express();
 				var passwordless = new Passwordless();
-				passwordless.init(new TokenStoreMockAuthOnly());
+				passwordless.init(new TokenStoreMock());
 
 				app.use(cookieParser());
 				app.use(sessionMiddleware);
@@ -69,7 +69,7 @@ describe('passwordless', function() {
 				it('should throw an exception if used without session middleware', function (done) {
 					var app = express();
 					var passwordless = new Passwordless();
-					passwordless.init(new TokenStoreMockAuthOnly());
+					passwordless.init(new TokenStoreMock());
 
 					app.use(passwordless.sessionSupport());
 					app.use(passwordless.acceptToken());
