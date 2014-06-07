@@ -3,9 +3,11 @@
 var util = require('util');
 var TokenStore = require('passwordless-tokenstore');
 
-function TokenStoreMock() {
+function TokenStoreMock(options) {
+	options = options || {};
 	TokenStore.call(this);
 	this.records = [];
+	this.integration = options.integration;
 }
 
 util.inherits(TokenStoreMock, TokenStore);
@@ -17,15 +19,15 @@ TokenStoreMock.prototype.authenticate = function(token, callback) {
 	// setTimeout to validate that async operation works
 	var self = this;
 	setTimeout(function() {
-		if(token === 'error') {
+		if(!self.integration && token === 'error') {
 			return callback('A mocked error', null, null);
-		} else if(token === 'valid') {
+		} else if(!self.integration && token === 'valid') {
 			return callback(null, 'valid@example.com', 'http://example.com/path');
-		} else if(token === 'alice') {
+		} else if(!self.integration && token === 'alice') {
 			return callback(null, 'alice@example.com', 'http://example.com/alice');
-		} else if(token === 'marc') {
+		} else if(!self.integration && token === 'marc') {
 			return callback(null, 'marc@example.com', 'http://example.com/marc');
-		} else if(token === 'invalid') {
+		} else if(!self.integration && token === 'invalid') {
 			return callback(null, null, null);
 		}
 

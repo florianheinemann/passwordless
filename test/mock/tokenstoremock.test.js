@@ -5,8 +5,8 @@ var TokenStoreMock = require('./tokenstoremock.js');
 
 var standardTests = require('passwordless-tokenstore-test');
 
-function TokenStoreMockFactory() {
-	return new TokenStoreMock();
+function TokenStoreMockFactory(options) {
+	return new TokenStoreMock(options);
 }
 
 var beforeEachTest = function(done) {
@@ -95,6 +95,27 @@ describe('Passwordless', function() {
 						expect(uid).to.not.exist;
 						expect(ref).to.not.exist;
 						done();
+					})
+				})
+			})
+
+			it('should disable all unit test shortcuts when initiated with {integration: true}', function(done) {
+				var store = TokenStoreMockFactory({integration:true});
+
+				store.authenticate('error', function(err, uid, ref) {
+					expect(err).to.not.exist;
+					expect(uid).to.not.exist;
+					expect(ref).to.not.exist;
+					store.authenticate('valid', function(err, uid, ref) {
+						expect(err).to.not.exist;
+						expect(uid).to.not.exist;
+						expect(ref).to.not.exist;
+						store.authenticate('invalid', function(err, uid, ref) {
+							expect(err).to.not.exist;
+							expect(uid).to.not.exist;
+							expect(ref).to.not.exist;
+							done();
+						})
 					})
 				})
 			})

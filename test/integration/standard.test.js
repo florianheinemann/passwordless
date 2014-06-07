@@ -42,7 +42,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMock());
+			passwordless.init(new TokenStoreMock({integration:true}));
 			passwordless.add(deliveryMockVerify, deliveryMockSend());
 
 			app.use(bodyParser());
