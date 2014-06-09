@@ -188,7 +188,7 @@ describe('passwordless', function() {
 
 			app.use(flash());
 
-			app.get('/restricted', passwordless.restricted({ 	flashUserNotAuth: 'You are not authorized' }), 
+			app.get('/restricted', passwordless.restricted({ flashUserNotAuth: 'You are not authorized' }), 
 				function(req, res){
 					res.send(200, 'authenticated');
 			});

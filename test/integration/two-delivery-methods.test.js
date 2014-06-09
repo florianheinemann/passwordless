@@ -12,15 +12,15 @@ var Mocks = require('../mock/mocks.js');
 
 describe('passwordless', function() {
 	describe('integration', function() {
-		describe('modified time to live (ttl)', function() {
+		describe('two different delivery methods', function() {
 
 			var mocks = new Mocks();
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock({integration:true}));
-			passwordless.addDelivery('short', mocks.deliveryMockSend('short'), { ttl: 100 });
-			passwordless.addDelivery('long', mocks.deliveryMockSend('long'));
+			passwordless.addDelivery('email', mocks.deliveryMockSend('email'));
+			passwordless.addDelivery('sms', mocks.deliveryMockSend('sms'));
 
 			app.use(bodyParser());
 			app.use(cookieParser());
@@ -42,10 +42,10 @@ describe('passwordless', function() {
 			var agent1 = request.agent(app);
 			var agent2 = request.agent(app);
 
-			it('should verify a user with standard ttl', function (done) {
+			it('should verify a user via email', function (done) {
 				agent1
 					.post('/login')
-					.send( { user: mocks.alice().email, delivery: 'long' } )
+					.send( { user: mocks.alice().email, delivery: 'email' } )
 					.expect(200, done);
 			})
 
@@ -53,13 +53,13 @@ describe('passwordless', function() {
 				expect(mocks.delivered.length).to.equal(1);
 				expect(mocks.delivered[0].token).to.have.length.above(0);
 				expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
-				expect(mocks.delivered[0].delivery).to.equal('long');
+				expect(mocks.delivered[0].delivery).to.equal('email');
 			})
 
-			it('should verify a user with short ttl', function (done) {
+			it('should verify a user via sms', function (done) {
 				agent2
 					.post('/login')
-					.send( { user: mocks.marc().email, delivery: 'short' } )
+					.send( { user: mocks.marc().phone, delivery: 'sms' } )
 					.expect(200, done);
 			})
 
@@ -67,23 +67,43 @@ describe('passwordless', function() {
 				expect(mocks.delivered.length).to.equal(2);
 				expect(mocks.delivered[1].token).to.have.length.above(0);
 				expect(mocks.delivered[1].user).to.equal(mocks.marc().id);
-				expect(mocks.delivered[1].delivery).to.equal('short');
+				expect(mocks.delivered[1].delivery).to.equal('sms');
 			})
 
-			it('should even after 200ms successfully log in with the standard ttl token', function (done) {
-				setTimeout(function() {
-					agent1
+			it('should still not allow access to restricted resources - 1/2', function (done) {
+				agent1
+					.get('/restricted')
+					.expect(401, done);
+			})
+
+			it('should still not allow access to restricted resources - 2/2', function (done) {
+				agent2
+					.get('/restricted')
+					.expect(401, done);
+			})
+
+			it('should allow access to a restricted resource with a proper token - 1/2', function (done) {
+				agent1
 					.get('/restricted?token=' + mocks.delivered[0].token)
-					.expect(200, done);				
-				}, 200)
+					.expect(200, done);
 			})
 
-			it('should reject a log in with a short ttl token after 200ms', function (done) {
-				setTimeout(function() {
-					agent2
+			it('should allow access to a restricted resource with a proper token - 2/2', function (done) {
+				agent2
 					.get('/restricted?token=' + mocks.delivered[1].token)
-					.expect(401, done);				
-				}, 200)
+					.expect(200, done);
+			})
+
+			it('should now allow access to a restricted resource without a token - 1/2', function (done) {
+				agent1
+					.get('/restricted')
+					.expect(200, done);
+			})
+
+			it('should now allow access to a restricted resource without a token - 2/2', function (done) {
+				agent2
+					.get('/restricted')
+					.expect(200, done);
 			})
 		})
 	})
