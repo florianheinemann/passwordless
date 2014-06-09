@@ -6,47 +6,18 @@ var request = require('supertest');
 var bodyParser = require('body-parser')
 var Passwordless = require('../../').Passwordless;
 var TokenStoreMock = require('../mock/tokenstoremock');
+var Mocks = require('../mock/mocks.js');
 
 describe('passwordless', function() {
 	describe('integration', function() {
-
-		var delivered = [];
-		var deliveryMockSend = function(name) {
-			return function(tokenToSend, uid, done) {
-					setTimeout(function() {
-						if(uid === 107) {
-							return done('error');
-						}
-
-						delivered.push({ token: tokenToSend, user: uid, delivery: name });
-						done();
-					}, 0);
-				}
-			}
-
-		var userDb = [
-			{id: 101, email: 'marc@example.com', phone: '+1-555-555-5555'},
-			{id: 103, email: 'alice@example.com', phone: '+1-777-777-7777'}
-		];
-
-		var findUser = function(user, delivery, callback) {
-			if(user === 'error') {
-				return callback('Some error', null);
-			}
-			for (var i = userDb.length - 1; i >= 0; i--) {
-				if(userDb[i].email === user) {
-					return callback(null, userDb[i].id);
-				}
-			};
-			callback(null, null);
-		}
-
 		describe('stateless', function() {
+
+			var mocks = new Mocks();
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock({integration:true}));
-			passwordless.addDelivery(deliveryMockSend());
+			passwordless.addDelivery(mocks.deliveryMockSend());
 
 			app.use(bodyParser());
 
@@ -62,7 +33,7 @@ describe('passwordless', function() {
 					res.send(200, 'authenticated');
 			});
 
-			app.post('/login', passwordless.requestToken(findUser),
+			app.post('/login', passwordless.requestToken(mocks.getUserId()),
 				function(req, res){
 					res.send(200);
 			});
@@ -89,14 +60,14 @@ describe('passwordless', function() {
 			it('should verify a proper user', function (done) {
 				agent
 					.post('/login')
-					.send( { user: 'alice@example.com' } )
+					.send( { user: mocks.alice().email } )
 					.expect(200, done);
 			})
 
 			it('should have sent a token', function () {
-				expect(delivered.length).to.equal(1);
-				expect(delivered[0].token).to.have.length.above(0);
-				expect(delivered[0].user).to.equal(103);
+				expect(mocks.delivered.length).to.equal(1);
+				expect(mocks.delivered[0].token).to.have.length.above(0);
+				expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
 			})
 
 			it('should still not allow access to restricted resources', function (done) {
@@ -107,7 +78,7 @@ describe('passwordless', function() {
 
 			it('should allow access to a restricted resource with a proper token', function (done) {
 				agent
-					.get('/restricted?token=' + delivered[0].token)
+					.get('/restricted?token=' + mocks.delivered[0].token)
 					.expect(200, done);
 			})
 
@@ -119,7 +90,7 @@ describe('passwordless', function() {
 
 			it('should again allow access to a restricted resource with the same token', function (done) {
 				agent
-					.get('/restricted?token=' + delivered[0].token)
+					.get('/restricted?token=' + mocks.delivered[0].token)
 					.expect(200, done);
 			})
 		})
