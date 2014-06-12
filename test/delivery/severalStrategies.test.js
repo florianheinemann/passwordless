@@ -8,55 +8,23 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var Passwordless = require('../../').Passwordless;
 var TokenStoreMock = require('../mock/tokenstoremock');
+var Mocks = require('../mock/mocks');
 
 describe('passwordless', function() {
 	describe('requestToken', function() {
 
-		var delivered = [];
-		var deliveryMockSend = function(name) {
-			return function(tokenToSend, uid, done) {
-					setTimeout(function() {
-						if(uid === 107) {
-							return done('error');
-						}
-
-						delivered.push({ token: tokenToSend, user: uid, delivery: name });
-						done();
-					}, 0);
-				}
-			}
-
-		var userDb = [
-			{id: 101, email: 'marc@example.com', phone: '+1-555-555-5555'},
-			{id: 103, email: 'alice@example.com', phone: '+1-777-777-7777'}
-		];
-
-		var findUser = function(user, delivery, callback) {
-			if(user === 'error') {
-				return callback('Some error', null);
-			}
-			for (var i = userDb.length - 1; i >= 0; i--) {
-				if(delivery === 'email' && userDb[i].email === user) {
-					return callback(null, userDb[i].id);
-				} else if(delivery === 'sms' && userDb[i].phone === user) {
-					return callback(null, userDb[i].id);
-				}
-			};
-			callback(null, null);
-		}
-
 		describe('several strategies', function() {
-
+			var mocks = new Mocks();
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
 			app.use(bodyParser());
 
-			passwordless.addDelivery('email', deliveryMockSend('email'));
-			passwordless.addDelivery('sms', deliveryMockSend('sms'));
+			passwordless.addDelivery('email', mocks.deliveryMockSend('email'));
+			passwordless.addDelivery('sms', mocks.deliveryMockSend('sms'));
 
-			app.post('/login', passwordless.requestToken(findUser),
+			app.post('/login', passwordless.requestToken(mocks.getUserId()),
 				function(req, res){
 					res.send(200);
 			});
@@ -67,63 +35,63 @@ describe('passwordless', function() {
 			it('should return 400 if the field "delivery" is not provided', function (done) {
 				agent1
 					.post('/login')
-					.send( { user: 'alice@example.com' } )
+					.send( { user: mocks.alice().email } )
 					.expect(400, done);
 			})
 
 			it('should not have sent or stored any tokens so far', function () {
-				expect(delivered.length).to.equal(0);
+				expect(mocks.delivered.length).to.equal(0);
 			})
 
 			it('should return 400 if the field "delivery" contains an invalid value', function (done) {
 				agent1
 					.post('/login')
-					.send( { user: 'alice@example.com', delivery: 'snailmail' } )
+					.send( { user: mocks.alice().email, delivery: 'snailmail' } )
 					.expect(400, done);
 			})
 
 			it('should not have sent or stored any tokens so far', function () {
-				expect(delivered.length).to.equal(0);
+				expect(mocks.delivered.length).to.equal(0);
 			})
 
 			it('should deliver token for a valid delivery method', function (done) {
 				agent1
 					.post('/login')
-					.send( { user: '+1-777-777-7777', delivery: 'sms' } )
+					.send( { user: mocks.alice().phone, delivery: 'sms' } )
 					.expect(200, done);
 			})
 
 			it('should have sent and stored token', function () {
-				expect(delivered.length).to.equal(1);
-				expect(delivered[0].delivery).to.equal('sms');
+				expect(mocks.delivered.length).to.equal(1);
+				expect(mocks.delivered[0].delivery).to.equal('sms');
 			})
 
 
 			it('should deliver token for a valid delivery method (2)', function (done) {
 				agent2
 					.post('/login')
-					.send( { user: 'alice@example.com', delivery: 'email' } )
+					.send( { user: mocks.alice().email, delivery: 'email' } )
 					.expect(200, done);
 			})
 
 			it('should have sent and stored token', function () {
-				expect(delivered.length).to.equal(2);
-				expect(delivered[1].delivery).to.equal('email');
+				expect(mocks.delivered.length).to.equal(2);
+				expect(mocks.delivered[1].delivery).to.equal('email');
 			})
 		})
 
 		describe('option(deliveryField)', function() {
-
+			var mocks = new Mocks();
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
 			app.use(bodyParser());
 
-			passwordless.addDelivery('email', deliveryMockSend('email'));
-			passwordless.addDelivery('sms', deliveryMockSend('sms'));
+			passwordless.addDelivery('email', mocks.deliveryMockSend('email'));
+			passwordless.addDelivery('sms', mocks.deliveryMockSend('sms'));
 
-			app.post('/login', passwordless.requestToken(findUser, {deliveryField: 'method'}),
+			app.post('/login', passwordless.requestToken(mocks.getUserId(), {deliveryField: 'method'}),
 				function(req, res){
 					res.send(200);
 			});
@@ -131,16 +99,16 @@ describe('passwordless', function() {
 			var agent = request.agent(app);
 
 			it('should deliver token for a valid delivery strategy', function (done) {
-				delivered = [];
+				mocks.delivered = [];
 				agent
 					.post('/login')
-					.send( { user: '+1-777-777-7777', method: 'sms' } )
+					.send( { user: mocks.alice().phone, method: 'sms' } )
 					.expect(200, done);
 			})
 
 			it('should have sent and stored token', function () {
-				expect(delivered.length).to.equal(1);
-				expect(delivered[0].delivery).to.equal('sms');
+				expect(mocks.delivered.length).to.equal(1);
+				expect(mocks.delivered[0].delivery).to.equal('sms');
 			})
 		})
 	})

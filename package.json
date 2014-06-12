@@ -1,6 +1,6 @@
 {
   "name": "passwordless",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A node.js module for passwordless authentication",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "no-password",
     "authentication"
   ],
-  "author": "Florian Heinemann <florian.heinemann@gmail.com> (http://twitter.com/florian__h)",
+  "author": "Florian Heinemann <florian.heinemann@gmail.com> (http://twitter.com/thesumofall)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/florianheinemann/passwordless/issues"
@@ -36,11 +36,10 @@
     "grunt": "^0.4.4",
     "grunt-mocha-test": "^0.10.2",
     "mocha": "^1.18.2",
-    "passwordless-tokenstore-test": "0.0.3",
+    "passwordless-tokenstore-test": "0.0.9",
     "supertest": "^0.12.0"
   },
   "dependencies": {
-    "node-uuid": "^1.4.1",
-    "passwordless-tokenstore": "0.0.2"
+    "node-uuid": "^1.4.1"
   }
 }

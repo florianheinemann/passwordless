@@ -43,7 +43,7 @@ describe('passwordless', function() {
 			});
 
 			request(app)
-				.get('/unrestricted?token=error')
+				.get('/unrestricted?token=error&uid=error')
 				.expect(500, done);
 		})
 
@@ -86,7 +86,7 @@ describe('passwordless', function() {
 					res.send(200, 'authenticated');
 			});
 
-			it('should not give access to restricted resources and return 401 if no token is provided', function (done) {
+			it('should not give access to restricted resources and return 401 if no token / uid is provided', function (done) {
 				request(app)
 					.get('/restricted')
 					.expect(401, done);
@@ -94,26 +94,32 @@ describe('passwordless', function() {
 
 			it('should not give access to restricted resources and return 401 if the passed token is empty', function (done) {
 				request(app)
-					.get('/restricted?token=')
+					.get('/restricted?token=&uid=valid')
 					.expect(401, done);
 			})
 
-			it('should not give access to restricted resources and return 401 if the passed token is invalid', function (done) {
+			it('should not give access to restricted resources and return 401 if the passed uid is empty', function (done) {
 				request(app)
-					.get('/restricted?token=invalid')
+					.get('/restricted?token=valid&uid=')
+					.expect(401, done);
+			})
+
+			it('should not give access to restricted resources and return 401 if the passed token/uid is invalid', function (done) {
+				request(app)
+					.get('/restricted?token=invalid&uid=invalid')
 					.expect(401, done);
 			})
 
 			it('should give access to restricted resources if supplied token is valid', function (done) {
 				request(app)
-					.get('/restricted?token=valid')
+					.get('/restricted?token=valid&uid=valid')
 					.expect(200, done);
 			})
 
 			it('should not give access to restricted resources if supplied token is valid but POST', function (done) {
 				request(app)
 					.post('/restricted')
-					.send('token=valid')
+					.send({ token: 'valid', uid: 'valid' })
 					.expect(401, done);
 			})
 		})
@@ -132,10 +138,10 @@ describe('passwordless', function() {
 					res.send(200, 'authenticated');
 			});
 
-			it('should give access to restricted resources if supplied token is valid (POST) and POST is allowed', function (done) {
+			it('should give access if supplied token/uid is valid (POST) and POST is allowed', function (done) {
 				request(app)
 					.post('/restricted')
-					.send('token=valid')
+					.send({ token: 'valid', uid: 'valid' })
 					.expect(200, done);
 			})
 		})
@@ -156,7 +162,7 @@ describe('passwordless', function() {
 
 				request(app)
 					.post('/restricted')
-					.send('token=valid')
+					.send({ token: 'valid', uid: 'valid' })
 					.expect(500, done);
 			})
 		})
@@ -174,20 +180,20 @@ describe('passwordless', function() {
 					res.send(200);
 			});
 
-			it('should deliver unrestricted resources if supplied token is empty', function (done) {
+			it('should deliver unrestricted resources if supplied token/uid is empty', function (done) {
 				request(app)
-					.get('/unrestricted?token=')
+					.get('/unrestricted?token=&uid=')
 					.expect(200, done);
 			})
 
-			it('should deliver unrestricted resources if supplied token is invalid', function (done) {
+			it('should deliver unrestricted resources if supplied token/uid is invalid', function (done) {
 				request(app)
-					.get('/unrestricted?token=invalid')
+					.get('/unrestricted?token=invalid&uid=invalid')
 					.expect(200, done);
 			})
 		})
 		
-		it('should flash an error message if supplied token is invalid and "flashInvalidToken" is supplied', function (done) {
+		it('should flash an error message if supplied token/uid is invalid and "flashInvalidToken" is supplied', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
@@ -198,7 +204,7 @@ describe('passwordless', function() {
 
 			app.use(flash());
 
-			app.use(passwordless.acceptToken({ flashInvalidToken: 'The submitted token is not valid' }));
+			app.use(passwordless.acceptToken({ flashInvalidToken: 'The submitted token for the given uid is not valid' }));
 
 			app.get('/unrestricted',
 				function(req, res){
@@ -206,8 +212,8 @@ describe('passwordless', function() {
 			});
 
 			request(app)
-				.get('/unrestricted?token=invalid')
-				.expect(200, 'The submitted token is not valid', done);
+				.get('/unrestricted?token=invalid&uid=invalid')
+				.expect(200, 'The submitted token for the given uid is not valid', done);
 		})
 
 		it('should throw an exception if flashInvalidToken is used without flash middleware', function (done) {
@@ -224,7 +230,7 @@ describe('passwordless', function() {
 			});
 
 			request(app)
-				.get('/unrestricted?token=invalid')
+				.get('/unrestricted?token=invalid&uid=invalid')
 				.expect(500, done);
 		})
 	})

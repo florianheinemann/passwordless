@@ -55,20 +55,20 @@ describe('passwordless', function() {
 
 				it('should fill req.user right after login', function (done) {
 					agent
-						.get('/protected?token=marc')
-						.expect(200, 'marc@example.com', done);
+						.get('/protected?token=marc&uid=marc')
+						.expect(200, 'marc', done);
 				});
 
 				it('should continue filling req.user also without token after login', function (done) {
 					agent
 						.get('/protected')
-						.expect(200, 'marc@example.com', done);
+						.expect(200, 'marc', done);
 				});
 
 				it('should continue filling req.user also without token and in non-protected pages after login', function (done) {
 					agent
 						.get('/not-protected')
-						.expect(200, 'marc@example.com', done);
+						.expect(200, 'marc', done);
 				});
 
 				it('should not fill req.user for any other user who is not logged in', function (done) {
@@ -79,14 +79,14 @@ describe('passwordless', function() {
 
 				it('should fill req.user right after login for a 2nd user', function (done) {
 					agent2
-						.get('/protected?token=alice')
-						.expect(200, 'alice@example.com', done);
+						.get('/protected?token=alice&uid=alice')
+						.expect(200, 'alice', done);
 				});
 
 				it('should still fill the correct req.user for a user even after another is logged in', function (done) {
 					agent
 						.get('/not-protected')
-						.expect(200, 'marc@example.com', done);
+						.expect(200, 'marc', done);
 				});
 
 				it('should not fill req.user anymore right after logout', function (done) {
@@ -103,8 +103,8 @@ describe('passwordless', function() {
 
 				it('should fill req.user right after login using an unprotected resource', function (done) {
 					agent
-						.get('/not-protected?token=marc')
-						.expect(200, 'marc@example.com', done);
+						.get('/not-protected?token=marc&uid=marc')
+						.expect(200, 'marc', done);
 				});
 			}
 
@@ -150,8 +150,8 @@ describe('passwordless', function() {
 
 			it('should fill req.user right after login', function (done) {
 				agent
-					.get('/protected?token=marc')
-					.expect(200, 'marc@example.com', done);
+					.get('/protected?token=marc&uid=marc')
+					.expect(200, 'marc', done);
 			});
 
 			it('should delete req.user for any non-authenticated request', function (done) {
@@ -162,20 +162,20 @@ describe('passwordless', function() {
 
 			it('should again fill req.user for a properly authenticated request', function (done) {
 				agent
-					.get('/protected?token=marc')
-					.expect(200, 'marc@example.com', done);
+					.get('/protected?token=marc&uid=marc')
+					.expect(200, 'marc', done);
 			});
 
 			it('should fill req.user right after login for a 2nd user', function (done) {
 				agent
-					.get('/protected?token=alice')
-					.expect(200, 'alice@example.com', done);
+					.get('/protected?token=alice&uid=alice')
+					.expect(200, 'alice', done);
 			});
 
 			it('should still fill the correct req.user for a user even after another one logged in', function (done) {
 				agent
-					.get('/protected?token=marc')
-					.expect(200, 'marc@example.com', done);
+					.get('/protected?token=marc&uid=marc')
+					.expect(200, 'marc', done);
 			});
 
 			it('should not fill req.user right after logout', function (done) {
@@ -212,8 +212,8 @@ describe('passwordless', function() {
 
 			it('should forward to the requested URL with proper token', function (done) {
 				agent
-					.get('/restricted?token=marc')
-					.expect(200, 'marc@example.com', done);
+					.get('/restricted?token=marc&uid=marc')
+					.expect(200, 'marc', done);
 			});
 
 			it('should ignore if afterwards an invalid token is passed', function (done) {
@@ -225,19 +225,19 @@ describe('passwordless', function() {
 			it('should still have the original user logged in', function (done) {
 				agent
 					.get('/restricted')
-					.expect(200, 'marc@example.com', done);
+					.expect(200, 'marc', done);
 			});
 
 			it('should allow change of user', function (done) {
 				agent
-					.get('/restricted?token=alice')
-					.expect(200, 'alice@example.com', done);
+					.get('/restricted?token=alice&uid=alice')
+					.expect(200, 'alice', done);
 			});
 
 			it('should still have the new user logged in', function (done) {
 				agent
 					.get('/restricted')
-					.expect(200, 'alice@example.com', done);
+					.expect(200, 'alice', done);
 			});
 		})
 	});
