@@ -73,7 +73,7 @@ describe('passwordless', function() {
 			it('should even after 200ms successfully log in with the standard ttl token', function (done) {
 				setTimeout(function() {
 					agent1
-					.get('/restricted?token=' + mocks.delivered[0].token)
+					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].user)
 					.expect(200, done);				
 				}, 200)
 			})
@@ -81,7 +81,7 @@ describe('passwordless', function() {
 			it('should reject a log in with a short ttl token after 200ms', function (done) {
 				setTimeout(function() {
 					agent2
-					.get('/restricted?token=' + mocks.delivered[1].token)
+					.get('/restricted?token=' + mocks.delivered[1].token + '&uid=' + mocks.delivered[1].user)
 					.expect(401, done);				
 				}, 200)
 			})

@@ -4,13 +4,15 @@ var expect = require('chai').expect;
 var express = require('express');
 var request = require('supertest');
 var bodyParser = require('body-parser')
+var cookieParser = require('cookie-parser');
+var expressSession = require('express-session');
 var Passwordless = require('../../').Passwordless;
 var TokenStoreMock = require('../mock/tokenstoremock');
 var Mocks = require('../mock/mocks.js');
 
 describe('passwordless', function() {
 	describe('integration', function() {
-		describe('stateless', function() {
+		describe('standard', function() {
 
 			var mocks = new Mocks();
 
@@ -20,8 +22,10 @@ describe('passwordless', function() {
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
 			app.use(bodyParser());
+			app.use(cookieParser());
+			app.use(expressSession({ secret: '42' }));
 
-			app.use(passwordless.acceptToken());
+			app.use(passwordless.sessionSupport());
 
 			app.get('/unrestricted',
 				function(req, res){
@@ -35,7 +39,14 @@ describe('passwordless', function() {
 
 			app.post('/login', passwordless.requestToken(mocks.getUserId()),
 				function(req, res){
-					res.send(200);
+					res.send(200, 'We\'ve just send an SMS to ' + 
+						req.body.user + ' for user: ' + req.passwordless.uidToAuth + 
+						'What\'s the token?');
+			});
+
+			app.post('/auth', passwordless.acceptToken({ allowPost: true }),
+				function(req, res) {
+					res.send(200, 'It\'s done. You are not auth\'ed');
 			});
 
 			app.get('/logout', passwordless.logout(),
@@ -60,7 +71,7 @@ describe('passwordless', function() {
 			it('should verify a proper user', function (done) {
 				agent
 					.post('/login')
-					.send( { user: mocks.alice().email } )
+					.send( { user: mocks.alice().phone } )
 					.expect(200, done);
 			})
 
@@ -76,22 +87,29 @@ describe('passwordless', function() {
 					.expect(401, done);
 			})
 
-			it('should allow access to a restricted resource with a proper token', function (done) {
+			it('should accept the authentication with the supplied token and user ID', function (done) {
 				agent
-					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].user)
+					.post('/auth')
+					.send( { token: mocks.delivered[0].token, uid: mocks.delivered[0].user })
 					.expect(200, done);
 			})
 
-			it('should still not allow access to a restricted resource without a token', function (done) {
+			it('should now allow access to a restricted resource without a token', function (done) {
+				agent
+					.get('/restricted')
+					.expect(200, done);
+			})
+
+			it('should successfully log out', function (done) {
+				agent
+					.get('/logout')
+					.expect(200, done);
+			})
+
+			it('should not anymore allow access to restricted resources', function (done) {
 				agent
 					.get('/restricted')
 					.expect(401, done);
-			})
-
-			it('should again allow access to a restricted resource with the same token', function (done) {
-				agent
-					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].user)
-					.expect(200, done);
 			})
 		})
 	})

@@ -30,9 +30,9 @@ describe('Passwordless', function() {
 					expect(count).to.equal(0);
 					expect(err).to.not.exist;
 
-					store.authenticate('valid', function(err, uid, ref) {
+					store.authenticate('valid', 'valid', function(err, valid, ref) {
 						expect(err).to.not.exist;
-						expect(uid).to.exist;
+						expect(valid).to.equal(true);
 						expect(ref).to.exist;
 						done();
 					})
@@ -45,9 +45,9 @@ describe('Passwordless', function() {
 					expect(count).to.equal(0);
 					expect(err).to.not.exist;
 
-					store.authenticate('alice', function(err, uid, ref) {
+					store.authenticate('alice', 'alice', function(err, valid, ref) {
 						expect(err).to.not.exist;
-						expect(uid).to.equal('alice@example.com');
+						expect(valid).to.equal(true);
 						expect(ref).to.equal('http://example.com/alice');
 						done();
 					})
@@ -60,9 +60,9 @@ describe('Passwordless', function() {
 					expect(count).to.equal(0);
 					expect(err).to.not.exist;
 
-					store.authenticate('marc', function(err, uid, ref) {
+					store.authenticate('marc', 'marc', function(err, valid, ref) {
 						expect(err).to.not.exist;
-						expect(uid).to.equal('marc@example.com');
+						expect(valid).to.equal(true);
 						expect(ref).to.equal('http://example.com/marc');
 						done();
 					})
@@ -75,9 +75,9 @@ describe('Passwordless', function() {
 					expect(count).to.equal(0);
 					expect(err).to.not.exist;
 
-					store.authenticate('invalid', function(err, uid, ref) {
+					store.authenticate('invalid', 'invalid', function(err, valid, ref) {
 						expect(err).to.not.exist;
-						expect(uid).to.not.exist;
+						expect(valid).to.equal(false);
 						expect(ref).to.not.exist;
 						done();
 					})
@@ -90,9 +90,9 @@ describe('Passwordless', function() {
 					expect(count).to.equal(0);
 					expect(err).to.not.exist;
 
-					store.authenticate('error', function(err, uid, ref) {
+					store.authenticate('error', 'error', function(err, valid, ref) {
 						expect(err).to.exist;
-						expect(uid).to.not.exist;
+						expect(valid).to.equal(false);
 						expect(ref).to.not.exist;
 						done();
 					})
@@ -102,17 +102,17 @@ describe('Passwordless', function() {
 			it('should disable all unit test shortcuts when initiated with {integration: true}', function(done) {
 				var store = TokenStoreMockFactory({integration:true});
 
-				store.authenticate('error', function(err, uid, ref) {
+				store.authenticate('error', 'error', function(err, valid, ref) {
 					expect(err).to.not.exist;
-					expect(uid).to.not.exist;
+					expect(valid).to.equal(false);
 					expect(ref).to.not.exist;
-					store.authenticate('valid', function(err, uid, ref) {
+					store.authenticate('valid', 'valid', function(err, valid, ref) {
 						expect(err).to.not.exist;
-						expect(uid).to.not.exist;
+						expect(valid).to.equal(false);
 						expect(ref).to.not.exist;
-						store.authenticate('invalid', function(err, uid, ref) {
+						store.authenticate('invalid', 'invalid', function(err, valid, ref) {
 							expect(err).to.not.exist;
-							expect(uid).to.not.exist;
+							expect(valid).to.equal(false);
 							expect(ref).to.not.exist;
 							done();
 						})

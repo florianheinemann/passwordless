@@ -37,7 +37,7 @@ describe('passwordless', function() {
 
 			it('should forward to the requested URL with valid token', function (done) {
 				agent
-					.get('/restricted?token=valid')
+					.get('/restricted?token=valid&uid=valid')
 					.expect(200, 'authenticated', done);
 			});
 

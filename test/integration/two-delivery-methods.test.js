@@ -84,13 +84,13 @@ describe('passwordless', function() {
 
 			it('should allow access to a restricted resource with a proper token - 1/2', function (done) {
 				agent1
-					.get('/restricted?token=' + mocks.delivered[0].token)
+					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].user)
 					.expect(200, done);
 			})
 
 			it('should allow access to a restricted resource with a proper token - 2/2', function (done) {
 				agent2
-					.get('/restricted?token=' + mocks.delivered[1].token)
+					.get('/restricted?token=' + mocks.delivered[1].token + '&uid=' + mocks.delivered[1].user)
 					.expect(200, done);
 			})
 

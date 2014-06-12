@@ -34,13 +34,13 @@ describe('passwordless', function() {
 
 			it('should forward to the requested URL with valid token', function (done) {
 				agent
-					.get('/protected?token=valid')
+					.get('/protected?token=valid&uid=valid')
 					.expect(200, 'authenticated', done);
 			});
 
 			it('should forward to the requested URL with valid token - second try', function (done) {
 				agent
-					.get('/protected?token=valid')
+					.get('/protected?token=valid&uid=valid')
 					.expect(200, 'authenticated', done);
 			});
 

@@ -26,10 +26,6 @@ describe('passwordless', function() {
 			var passwordless = new Passwordless();
 			expect(function() { passwordless.init() }).to.throw(Error);
 		})
-		it('should throw an Error if called with an invalid parameter', function () {
-			var passwordless = new Passwordless();
-			expect(function() { passwordless.init(new Object()) }).to.throw(Error);
-		})
 		
 		it('should proceed if called correctly', function () {
 			var passwordless = new Passwordless();

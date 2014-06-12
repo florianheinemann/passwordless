@@ -4,7 +4,8 @@ function Mocks() {
 	this.delivered = [];
 	this.userDb = [
 		{id: 101, email: 'marc@example.com', phone: '+1-555-555-5555'},
-		{id: 103, email: 'alice@example.com', phone: '+1-777-777-7777'}
+		{id: 103, email: 'alice@example.com', phone: '+1-777-777-7777'},
+		{id: 107, email: 'deliveryError@example.com', phone: '+1-0001'}
 	];
 }
 
@@ -50,6 +51,10 @@ Mocks.prototype.marc = function() {
 
 Mocks.prototype.alice = function() {
 	return this.userDb[1];
+}
+
+Mocks.prototype.deliveryError = function() {
+	return this.userDb[2];
 }
 
 module.exports = Mocks;

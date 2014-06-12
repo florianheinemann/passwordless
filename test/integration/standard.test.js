@@ -83,7 +83,7 @@ describe('passwordless', function() {
 
 			it('should allow access to a restricted resource with a proper token', function (done) {
 				agent
-					.get('/restricted?token=' + mocks.delivered[0].token)
+					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].user)
 					.expect(200, done);
 			})
 

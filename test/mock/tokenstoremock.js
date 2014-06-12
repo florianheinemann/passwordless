@@ -1,42 +1,38 @@
 'use strict';
 
 var util = require('util');
-var TokenStore = require('passwordless-tokenstore');
 
 function TokenStoreMock(options) {
 	options = options || {};
-	TokenStore.call(this);
 	this.records = [];
 	this.integration = options.integration;
 }
 
-util.inherits(TokenStoreMock, TokenStore);
-
-TokenStoreMock.prototype.authenticate = function(token, callback) {
-	if(!token || !callback) {
+TokenStoreMock.prototype.authenticate = function(token, uid, callback) {
+	if(!token || !uid || !callback) {
 		throw new Error();
 	}
 	// setTimeout to validate that async operation works
 	var self = this;
 	setTimeout(function() {
 		if(!self.integration && token === 'error') {
-			return callback('A mocked error', null, null);
+			return callback('A mocked error', false, null);
 		} else if(!self.integration && token === 'valid') {
-			return callback(null, 'valid@example.com', 'http://example.com/path');
+			return callback(null, true, 'http://example.com/path');
 		} else if(!self.integration && token === 'alice') {
-			return callback(null, 'alice@example.com', 'http://example.com/alice');
+			return callback(null, true, 'http://example.com/alice');
 		} else if(!self.integration && token === 'marc') {
-			return callback(null, 'marc@example.com', 'http://example.com/marc');
+			return callback(null, true, 'http://example.com/marc');
 		} else if(!self.integration && token === 'invalid') {
-			return callback(null, null, null);
+			return callback(null, false, null);
 		}
 
-		var found = self._findRecord(null, token);
+		var found = self._findRecord(uid, token);
 
 		if(found >= 0 && self.records[found].validTill >= Date.now()) {
-			callback(null, self.records[found].uid, self.records[found].origin);
+			callback(null, true, self.records[found].origin);
 		} else {
-			callback(null, null, null);
+			callback(null, false, null);
 		}	
 	}, 0)
 };
@@ -61,7 +57,7 @@ TokenStoreMock.prototype.storeOrUpdate = function(token, uid, msToLive, originUr
 	}, 0)
 }
 
-TokenStoreMock.prototype.remove = function(token, callback) {
+TokenStoreMock.prototype.invalidateToken = function(token, callback) {
 	if(!token || !callback) {
 		throw new Error();
 	}
@@ -69,6 +65,23 @@ TokenStoreMock.prototype.remove = function(token, callback) {
 	var self = this;
 	setTimeout(function() {
 		var found = self._findRecord(null, token);
+		if(found < 0) {
+			callback();
+		} else {
+			self.records.splice(found, 1);
+			callback();
+		}
+	}, 0)
+}
+
+TokenStoreMock.prototype.invalidateUser = function(uid, callback) {
+	if(!uid || !callback) {
+		throw new Error();
+	}
+	// setTimeout to validate that async operation works
+	var self = this;
+	setTimeout(function() {
+		var found = self._findRecord(uid, null);
 		if(found < 0) {
 			callback();
 		} else {
@@ -104,7 +117,7 @@ TokenStoreMock.prototype.length = function(callback) {
 TokenStoreMock.prototype._findRecord = function(uid, token) {
 	for (var i = this.records.length - 1; i >= 0; i--) {
 		var record = this.records[i];
-		if((!uid || record.uid === uid) && (!token || token === record.token)) {
+		if((!uid || record.uid == uid) && (!token || token === record.token)) {
 			return i;
 		}
 	};
