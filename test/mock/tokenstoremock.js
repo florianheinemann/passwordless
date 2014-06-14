@@ -59,23 +59,6 @@ TokenStoreMock.prototype.storeOrUpdate = function(token, uid, msToLive, originUr
 	}, 0)
 }
 
-TokenStoreMock.prototype.invalidateToken = function(token, callback) {
-	if(!token || !callback) {
-		throw new Error();
-	}
-	// setTimeout to validate that async operation works
-	var self = this;
-	setTimeout(function() {
-		var found = self._findRecord(null, token);
-		if(found < 0) {
-			callback();
-		} else {
-			self.records.splice(found, 1);
-			callback();
-		}
-	}, 0)
-}
-
 TokenStoreMock.prototype.invalidateUser = function(uid, callback) {
 	if(!uid || !callback) {
 		throw new Error();
