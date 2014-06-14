@@ -181,7 +181,6 @@ router.get('/restricted', passwordless.restricted(),
   // render the secret page
 });
 ```
-
 You can also protect a full path, by doing:
 ```javascript
 router.use('/admin', passwordless.restricted());
@@ -197,15 +196,13 @@ router.get('/admin', passwordless.restricted(),
 ```
 
 ## More complex examples
-
 To be finalized
 
 ## Full API documentation
-
 To be finalized
 
 ## Tests
-
+Download the whole repository and call:
 `$ npm test`
 
 ## License
