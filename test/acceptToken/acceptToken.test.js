@@ -284,7 +284,7 @@ describe('passwordless', function() {
 			})
 		})
 		
-		it('should flash an error message if supplied token/uid is invalid and "flashInvalidToken" is supplied', function (done) {
+		it('should flash an error message if supplied token/uid is invalid and "failureFlash" is supplied', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
@@ -295,7 +295,7 @@ describe('passwordless', function() {
 
 			app.use(flash());
 
-			app.use(passwordless.acceptToken({ flashInvalidToken: 'The submitted token for the given uid is not valid' }));
+			app.use(passwordless.acceptToken({ failureFlash: 'The submitted token for the given uid is not valid' }));
 
 			app.get('/unrestricted',
 				function(req, res){
@@ -307,13 +307,13 @@ describe('passwordless', function() {
 				.expect(200, 'The submitted token for the given uid is not valid', done);
 		})
 
-		it('should throw an exception if flashInvalidToken is used without flash middleware', function (done) {
+		it('should throw an exception if failureFlash is used without flash middleware', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.use(passwordless.acceptToken({ flashInvalidToken: 'The submitted token is not valid' }));
+			app.use(passwordless.acceptToken({ failureFlash: 'The submitted token is not valid' }));
 
 			app.get('/unrestricted',
 				function(req, res){
