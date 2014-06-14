@@ -365,7 +365,7 @@ describe('passwordless', function() {
 				})
 			})
 
-			describe('option:unknownUserRedirect', function() {
+			describe('option:failureRedirect', function() {
 				var mocks = new Mocks();
 				var app = express();
 				var passwordless = new Passwordless();
@@ -375,7 +375,7 @@ describe('passwordless', function() {
 
 				passwordless.addDelivery(mocks.deliveryMockSend());
 
-				app.post('/login', passwordless.requestToken(mocks.getUserId(), { unknownUserRedirect: '/mistake' }),
+				app.post('/login', passwordless.requestToken(mocks.getUserId(), { failureRedirect: '/mistake' }),
 					function(req, res){
 						res.send(200, req.passwordless.uidToAuth.toString());
 				});
@@ -420,7 +420,7 @@ describe('passwordless', function() {
 				})
 			})
 
-			describe('option:unknownUserFlash', function() {
+			describe('option:failureFlash', function() {
 				var mocks = new Mocks();
 				var app = express();
 				var passwordless = new Passwordless();
@@ -434,8 +434,8 @@ describe('passwordless', function() {
 
 				app.use(flash());
 
-				app.post('/login', passwordless.requestToken(mocks.getUserId(), { 	unknownUserRedirect: '/mistake',
-						unknownUserFlash: 'Provided user not valid' }),
+				app.post('/login', passwordless.requestToken(mocks.getUserId(), { 	failureRedirect: '/mistake',
+						failureFlash: 'Provided user not valid' }),
 					function(req, res){
 						res.send(200);
 				});
@@ -468,7 +468,7 @@ describe('passwordless', function() {
 				})
 			})
 
-			describe('option:unknownUserFlash (without flash middleware)', function() {
+			describe('option:failureFlash (without flash middleware)', function() {
 				var mocks = new Mocks();
 				var app = express();
 				var passwordless = new Passwordless();
@@ -481,7 +481,7 @@ describe('passwordless', function() {
 				app.use(expressSession({ secret: '42' }));
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), 
-					{ unknownUserRedirect: '/mistake', unknownUserFlash: 'Provided user not valid' }),
+					{ failureRedirect: '/mistake', failureFlash: 'Provided user not valid' }),
 					function(req, res){
 						res.send(200);
 				});
@@ -497,7 +497,7 @@ describe('passwordless', function() {
 				})
 			})
 
-			describe('option:unknownUserFlash (without option:unknownUserRedirect)', function() {
+			describe('option:failureFlash (without option:failureRedirect)', function() {
 				var mocks = new Mocks();
 				var app = express();
 				var passwordless = new Passwordless();
@@ -509,7 +509,7 @@ describe('passwordless', function() {
 				app.use(cookieParser());
 				app.use(expressSession({ secret: '42' }));
 
-				app.post('/login', passwordless.requestToken(mocks.getUserId(), { unknownUserFlash: 'Provided user not valid' }),
+				app.post('/login', passwordless.requestToken(mocks.getUserId(), { failureFlash: 'Provided user not valid' }),
 					function(req, res){
 						res.send(200);
 				});

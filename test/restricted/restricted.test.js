@@ -116,7 +116,7 @@ describe('passwordless', function() {
 				.expect('location', '/login?mode=test&lang=en&origin=%2Frestricted%3Fid%3D3', done);
 		})
 
-		describe('flashFailure', function() {
+		describe('failureFlash', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
@@ -128,7 +128,7 @@ describe('passwordless', function() {
 			app.use(flash());
 
 			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login',
-																flashFailure: 'You are not authorized' }),
+																failureFlash: 'You are not authorized' }),
 				function(req, res){
 					res.send(200);
 			});
@@ -152,7 +152,7 @@ describe('passwordless', function() {
 					});
 			})
 
-			it('should flash a message if "flashFailure" is provided', function (done) {
+			it('should flash a message if "failureFlash" is provided', function (done) {
 				agent
 					.get('/login')
                     .set('Cookie', cookie)
@@ -160,14 +160,14 @@ describe('passwordless', function() {
 			})
 		})
 
-		it('should throw an exception if "flashFailure" is used without flash middleware', function (done) {
+		it('should throw an exception if "failureFlash" is used without flash middleware', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
 			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login',
-																flashFailure: 'You are not authorized' }), 
+																failureFlash: 'You are not authorized' }), 
 				function(req, res){
 					res.send(200, 'authenticated');
 			});
@@ -177,7 +177,7 @@ describe('passwordless', function() {
 				.expect(500, done);
 		})
 
-		it('should throw an exception if "flashFailure" is used without "failureRedirect"', function (done) {
+		it('should throw an exception if "failureFlash" is used without "failureRedirect"', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
@@ -188,7 +188,7 @@ describe('passwordless', function() {
 
 			app.use(flash());
 
-			app.get('/restricted', passwordless.restricted({ flashFailure: 'You are not authorized' }), 
+			app.get('/restricted', passwordless.restricted({ failureFlash: 'You are not authorized' }), 
 				function(req, res){
 					res.send(200, 'authenticated');
 			});
