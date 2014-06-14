@@ -17,13 +17,15 @@ TokenStoreMock.prototype.authenticate = function(token, uid, callback) {
 	setTimeout(function() {
 		if(!self.integration && token === 'error') {
 			return callback('A mocked error', false, null);
-		} else if(!self.integration && token === 'valid') {
+		} else if(!self.integration && token === 'valid' && uid === 'valid') {
 			return callback(null, true, 'http://example.com/path');
-		} else if(!self.integration && token === 'alice') {
+		} else if(!self.integration && token === 'alice' && uid === 'alice') {
 			return callback(null, true, 'http://example.com/alice');
-		} else if(!self.integration && token === 'marc') {
+		} else if(!self.integration && token === 'marc' && uid === 'marc') {
 			return callback(null, true, 'http://example.com/marc');
-		} else if(!self.integration && token === 'invalid') {
+		} else if(!self.integration && token === 'tom' && uid === 'tom') {
+			return callback(null, true, null);
+		} else if(!self.integration && (token === 'invalid' || uid === 'invalid')) {
 			return callback(null, false, null);
 		}
 
@@ -122,6 +124,13 @@ TokenStoreMock.prototype._findRecord = function(uid, token) {
 		}
 	};
 	return -1;
+}
+
+TokenStoreMock.prototype.lastRecord = function() {
+	if(this.records.length <= 0)
+		return null;
+	else
+		return this.records[this.records.length-1];
 }
 
 function Record(uid, token, validTill, origin) {

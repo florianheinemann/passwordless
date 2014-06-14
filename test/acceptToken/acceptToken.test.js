@@ -157,6 +157,64 @@ describe('passwordless', function() {
 			}
 		})
 
+		describe('option:enableOriginRedirect', function() {
+
+			describe('successful authentication', function() {
+				var app = express();
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMock());
+
+				app.get('/acceptToken', passwordless.acceptToken({ enableOriginRedirect: true }),
+					function(req, res){
+						res.send(200, 'no redirect happened');
+				});
+
+				it('should redirect after successful authentication', function (done) {
+					// user marc has a redirect target
+					request(app)
+						.get('/acceptToken?token=marc&uid=marc')
+						.expect(302)
+						.expect('location', 'http://example.com/marc', done);
+				})
+			})
+
+			describe('successful authentication but without redirect goal', function() {
+				var app = express();
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMock());
+
+				app.get('/acceptToken', passwordless.acceptToken({ enableOriginRedirect: true }),
+					function(req, res){
+						res.send(200, 'no redirect happened');
+				});
+
+				it('should simply continue through the middleware if no redirect target', function (done) {
+					// user tom has no redirect goal
+					request(app)
+						.get('/acceptToken?token=tom&uid=tom')
+						.expect(200, 'no redirect happened', done);
+				})
+			})
+
+			describe('successful authentication, supplied redirect goal but no option set', function() {
+				var app = express();
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMock());
+
+				app.get('/acceptToken', passwordless.acceptToken(),
+					function(req, res){
+						res.send(200, 'no redirect happened');
+				});
+
+				it('should simply continue through the middleware if no option set', function (done) {
+					// user tom has no redirect goal
+					request(app)
+						.get('/acceptToken?token=marc&uid=marc')
+						.expect(200, 'no redirect happened', done);
+				})
+			})
+		})
+
 		describe('allow POST tokens', function() {
 
 			var app = express();

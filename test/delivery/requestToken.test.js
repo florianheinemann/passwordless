@@ -277,6 +277,76 @@ describe('passwordless', function() {
 		})
 
 		describe('requestToken(options)', function() {
+
+			describe('option:originField', function() {
+				describe('without provided originField', function() {
+					var mocks = new Mocks();
+					var app = express();
+					var passwordless = new Passwordless();
+					var store = new TokenStoreMock();
+					passwordless.init(store);
+
+					app.use(bodyParser());
+
+					passwordless.addDelivery(mocks.deliveryMockSend());
+
+					app.post('/login', passwordless.requestToken(mocks.getUserId(), { }),
+						function(req, res){
+							res.send(200, req.passwordless.uidToAuth.toString());
+					});
+
+					var agent = request.agent(app);
+
+					it('should verify a proper user and set req.passwordless.uidToAuth to the user\'s UID', function (done) {
+						agent
+							.post('/login')
+							.send( { user: mocks.alice().email, origin: 'http://www.example.com/origin/' } )
+							.expect(200, mocks.alice().id.toString(), done);
+					})
+
+					it('should not have stored the origin URL', function () {
+						var lastRecord = store.lastRecord();
+						expect(lastRecord).to.exist;
+						expect(lastRecord.uid).to.equal(mocks.alice().id);
+						expect(lastRecord.origin).to.not.eixst;
+					})
+				})
+
+				describe('with provided originField', function() {
+					var mocks = new Mocks();
+					var app = express();
+					var passwordless = new Passwordless();
+					var store = new TokenStoreMock();
+					passwordless.init(store);
+
+					app.use(bodyParser());
+
+					passwordless.addDelivery(mocks.deliveryMockSend());
+
+					app.post('/login', passwordless.requestToken(mocks.getUserId(), { originField: 'origin' }),
+						function(req, res){
+							res.send(200, req.passwordless.uidToAuth.toString());
+					});
+
+					var agent = request.agent(app);
+
+					var origin = 'http://www.example.com/origin/';
+					it('should verify a proper user and set req.passwordless.uidToAuth to the user\'s UID', function (done) {
+						agent
+							.post('/login')
+							.send( { user: mocks.alice().email, origin: origin } )
+							.expect(200, mocks.alice().id.toString(), done);
+					})
+
+					it('should not have stored the origin URL', function () {
+						var lastRecord = store.lastRecord();
+						expect(lastRecord).to.exist;
+						expect(lastRecord.uid).to.equal(mocks.alice().id);
+						expect(lastRecord.origin).to.equal(origin);
+					})					
+				})
+			})
+
 			describe('option:userField', function() {
 				var mocks = new Mocks();
 				var app = express();
@@ -329,10 +399,6 @@ describe('passwordless', function() {
 					expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
 				})
 			})
-
-			describe('option:referrer', function() {
-				it('should be tested');
-			});
 
 			describe('option:allowGet', function() {
 				var mocks = new Mocks();
