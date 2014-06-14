@@ -156,6 +156,46 @@ router.post('/sendtoken',
 });
 ```
 
+### 8. Login page
+All you need is a form where users enter their email address, for example:
+```html
+<html>
+	<body>
+		<h1>Login</h1>
+		<form action="/sendtoken" method="POST">
+			Email:
+			<br><input name="user" type="text">
+			<br><input type="submit" value="Login">
+		</form>
+	</body>
+</html>
+```
+By default, Passwordless will look for a field called `user` submitted via POST.
+
+### 9. Protect your pages
+You can protect all pages that should only be accessed by authenticated users by using the `passwordless.restricted()` middleware, for example:
+```javascript
+/* GET restricted site. */
+router.get('/restricted', passwordless.restricted(),
+ function(req, res) {
+  // render the secret page
+});
+```
+
+You can also protect a full path, by doing:
+```javascript
+router.use('/admin', passwordless.restricted());
+```
+
+### 10. Who is logged in?
+Passwordless stores the user ID in req.user (at least by default). So, if you want to display the user's details or use them for further requests, you can do something such as:
+```javascript
+router.get('/admin', passwordless.restricted(),
+	function(req, res) {
+		res.render('admin', { user: req.user });
+});
+```
+
 ## More complex examples
 
 To be finalized
