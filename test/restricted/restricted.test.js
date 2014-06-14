@@ -80,7 +80,7 @@ describe('passwordless', function() {
 				.expect('location', '/login', done);
 		})
 
-		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided / simple', function (done) {
+		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided (simple)', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
@@ -98,7 +98,7 @@ describe('passwordless', function() {
 				.expect('location', '/login?origin=%2Frestricted%3Fid%3D3', done);
 		})
 
-		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided / additional param', function (done) {
+		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided (additional param)', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();

@@ -65,63 +65,96 @@ describe('passwordless', function() {
 
 		describe('restricted resources', function() {
 
-			var app = express();
-			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMock());
-
-			app.use(passwordless.acceptToken());
-
-			app.get('/restricted', passwordless.restricted(),
-				function(req, res){
-					res.send(200, 'authenticated');
-			});
-
-			app.post('/restricted', passwordless.restricted(),
-				function(req, res){
-					res.send(200, 'authenticated');
-			});
-
-			app.get('/restricted/:token', passwordless.restricted(),
-				function(req, res){
-					res.send(200, 'authenticated');
-			});
-
-			it('should not give access to restricted resources and return 401 if no token / uid is provided', function (done) {
-				request(app)
-					.get('/restricted')
-					.expect(401, done);
+			describe('with no further options', function() {
+				runTestsWithOptions();
 			})
 
-			it('should not give access to restricted resources and return 401 if the passed token is empty', function (done) {
-				request(app)
-					.get('/restricted?token=&uid=valid')
-					.expect(401, done);
+			describe('with tokenField and uidField options set', function() {
+				runTestsWithOptions('t', 'u');
 			})
 
-			it('should not give access to restricted resources and return 401 if the passed uid is empty', function (done) {
-				request(app)
-					.get('/restricted?token=valid&uid=')
-					.expect(401, done);
+			describe('with tokenField option set', function() {
+				runTestsWithOptions('t', null);
 			})
 
-			it('should not give access to restricted resources and return 401 if the passed token/uid is invalid', function (done) {
-				request(app)
-					.get('/restricted?token=invalid&uid=invalid')
-					.expect(401, done);
+			describe('with uidField option set', function() {
+				runTestsWithOptions(null, 'u');
 			})
 
-			it('should give access to restricted resources if supplied token is valid', function (done) {
-				request(app)
-					.get('/restricted?token=valid&uid=valid')
-					.expect(200, done);
-			})
+			function runTestsWithOptions(tokenField, uidField) {
 
-			it('should not give access to restricted resources if supplied token is valid but POST', function (done) {
-				request(app)
-					.post('/restricted')
-					.send({ token: 'valid', uid: 'valid' })
-					.expect(401, done);
-			})
+				var app = express();
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMock());
+
+				if(tokenField || uidField) {
+					var options = {};
+					if(tokenField)
+						options.tokenField = tokenField;
+					if(uidField)
+						options.uidField = uidField;
+					app.use(passwordless.acceptToken(options));
+				} else {
+					app.use(passwordless.acceptToken());
+				}
+				
+				tokenField = (tokenField) ? tokenField : 'token';
+				uidField = (uidField) ? uidField : 'uid';
+
+				function buildQueryString(token, uid) {
+					var str = tokenField + '=' + token;
+					str += '&' + uidField + '=' + uid;
+					return str;
+				}
+
+
+				app.get('/restricted', passwordless.restricted(),
+					function(req, res){
+						res.send(200, 'authenticated');
+				});
+
+				app.post('/restricted', passwordless.restricted(),
+					function(req, res){
+						res.send(200, 'authenticated');
+				});
+
+				it('should not give access to restricted resources and return 401 if no token / uid is provided', function (done) {
+					request(app)
+						.get('/restricted')
+						.expect(401, done);
+				})
+
+				it('should not give access to restricted resources and return 401 if the passed token is empty', function (done) {
+					request(app)
+						.get('/restricted?' + buildQueryString('', 'valid'))
+						.expect(401, done);
+				})
+
+				it('should not give access to restricted resources and return 401 if the passed uid is empty', function (done) {
+					request(app)
+						.get('/restricted?' + buildQueryString('valid', ''))
+						.expect(401, done);
+				})
+
+				it('should not give access to restricted resources and return 401 if the passed token/uid is invalid', function (done) {
+					request(app)
+						.get('/restricted?' + buildQueryString('invalid', 'invalid'))
+						.expect(401, done);
+				})
+
+				it('should give access to restricted resources if supplied token is valid', function (done) {
+					request(app)
+						.get('/restricted?' + buildQueryString('valid', 'valid'))
+						.expect(200, done);
+				})
+
+				it('should not give access to restricted resources if supplied token is valid but POST', function (done) {
+					request(app)
+						.post('/restricted')
+						.send('{ "' + tokenField + '" : "valid", "' + uidField + '" : "valid" }')
+						.expect(401, done);
+				})
+			}
 		})
 
 		describe('allow POST tokens', function() {
