@@ -287,7 +287,38 @@ router.post('/auth', passwordless.acceptToken({ allowPost: true }),
 ```
 
 ### Successful login and redirect to origin
-TBD
+Passwordless supports the redirect of users to the login page, remembering the original URL, and then redirecting them again to the originally requested page when the token has been submitted. Due to the many steps involved, several modifications have to be undertaken:
+
+**1: Set `originField` and `failureRedirect` for passwordless.restricted() **
+Doing this will call `/login` with `/login?origin=/admin` to allow later reuse
+```javascript
+router.get('/admin', passwordless.restricted( { originField: 'origin', failureRedirect: '/login' }));
+```
+
+**2: Display `origin` as hidden field on the login page**
+Be sure to pass `origin` to the page renderer.
+```html
+<form action="/sendtoken" method="POST">
+	Token:
+	<br><input name="token" type="text">
+	<input type="hidden" name="origin" value="<%= origin %>">
+	<br><input type="submit" value="Login">
+</form>
+```
+
+**3: Let `requestToken()` accept `origin`**
+This will store the original URL next to the token in the TokenStore.
+```javascript
+app.post('/sendtoken', passwordless.requestToken(function(...) { }, { originField: 'origin' }),
+	function(req, res){
+		// successfully sent
+});
+```
+
+**4: Reconfigure `acceptToken()` middleware**
+```javascript
+app.use(passwordless.acceptToken( { enableOriginRedirect: true } ));
+```
 
 ### Several delivery strategies
 In case you want to use several ways to send out tokens you have to add several delivery strategies as shown below:
@@ -330,7 +361,7 @@ passwordless.addDelivery(function(tokenToSend, uidToSend, recipient, callback) {
 ```
 
 ### Stateless operation
-TBD
+Just remove `app.use(passwordless.sessionSupport());` middleware. Every request for a restricted resource has then to be combined with a token and uid. Please consider the limited lifetime of tokens. You might want to extend it in such cases.
 
 ## The tokens and security
 By default, the tokens are UUIDs/GUIDs generated according to [RFC4122](http://www.ietf.org/rfc/rfc4122.txt) Version 4 and as implemented by [node-uuid](https://github.com/broofa/node-uuid). They can be considered strong enough for the purpose but should be combined with a finite time-to-live (set by default to 1h). In addition, it is absolutely mandatory to store the tokens securely by hashing and salting them (done by default in TokenStores such as [MongoStore](https://github.com/florianheinemann/passwordless-mongostore). Security can be further increased bu limiting the number of tries per UID before calling `TokenStore.invalidateUser(uid, callback)` combined with a login-lock for the UID.
