@@ -17,9 +17,9 @@ var routes = require('./routes/index');
 var app = express();
 
 // TODO: email setup (has to be changed)
-var yourEmail = 'pwdlessjs@gmail.com';
-var yourPwd = 'MxxHu3k4pv8MorKC*y.HrLuK?';
-var yourSmtp = 'smtp.gmail.com';
+var yourEmail = 'YOUR EMAIL TO SEND TOKENS';
+var yourPwd = 'YOUR PWD FOR THIS EMAIL';
+var yourSmtp = 'YOUR SMTP SUCH AS: smtp.gmail.com';
 var smtpServer  = email.server.connect({
    user:    yourEmail, 
    password: yourPwd, 
