@@ -247,6 +247,48 @@ router.get('/mistake',
 });
 ```
 
+### 2-step authentication (e.g. for SMS)
+For some token-delivery channels you want to have the shortest possible token (e.g. for text messages). One way to do so is to transport only the token while keeping the UID in the session. In such a scenario the user would type in his phone number, hit submit, be redirected to another page where she has to type in the received token, and then hit submit another time. To achieve this, requestToken stores the requested UID in `req.passwordless.uidToAuth`. Putting it all together, take the following steps:
+
+1. Read out `req.passwordless.uidToAuth`
+
+```javascript
+// Display a new form after the user has submitted the phone number
+router.post('/sendtoken', passwordless.requestToken(function(...) { },
+	function(req, res) {
+  	res.render('secondstep', { uid: req.passwordless.uidToAuth });
+});
+```
+
+2. Display another form to submit the token submitting the UID in a hidden input
+
+```html
+<html>
+	<body>
+		<h1>Login</h1>
+		<p>You should have received a token via SMS. Type it in below:</p>
+		<form action="/auth" method="POST">
+			Token:
+			<br><input name="token" type="text">
+			<input type="hidden" name="uid" value="<%= uid %>">
+			<br><input type="submit" value="Login">
+		</form>
+	</body>
+</html>
+```
+
+3. Allow POST to accept tokens
+
+```javascript
+router.post('/auth', passwordless.acceptToken({ allowPost: true }),
+	function(req, res) {
+		// success!
+});
+```
+
+### Successful login and redirect to origin
+TBD
+
 ### Several delivery strategies
 In case you want to use several ways to send out tokens you have to add several delivery strategies as shown below:
 ```javascript
@@ -286,6 +328,9 @@ passwordless.addDelivery(function(tokenToSend, uidToSend, recipient, callback) {
 	// send the token to recipient
 }, {tokenAlgorithm: function() {return 'random'}});
 ```
+
+### Stateless operation
+TBD
 
 ## The tokens and security
 By default, the tokens are UUIDs/GUIDs generated according to [RFC4122](http://www.ietf.org/rfc/rfc4122.txt) Version 4 and as implemented by [node-uuid](https://github.com/broofa/node-uuid). They can be considered strong enough for the purpose but should be combined with a finite time-to-live (set by default to 1h). In addition, it is absolutely mandatory to store the tokens securely by hashing and salting them (done by default in TokenStores such as [MongoStore](https://github.com/florianheinemann/passwordless-mongostore). Security can be further increased bu limiting the number of tries per UID before calling `TokenStore.invalidateUser(uid, callback)` combined with a login-lock for the UID.
