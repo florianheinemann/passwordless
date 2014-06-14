@@ -177,6 +177,27 @@ describe('passwordless', function() {
 				.expect(500, done);
 		})
 
+		it('should throw an exception if "originField" is used without "failureRedirect"', function (done) {
+
+			var app = express();
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMock());
+
+			app.use(cookieParser());
+			app.use(expressSession({ secret: '42' }));
+
+			app.use(flash());
+
+			app.get('/restricted', passwordless.restricted({ originField: 'origin' }), 
+				function(req, res){
+					res.send(200, 'authenticated');
+			});
+
+			request(app)
+				.get('/restricted')
+				.expect(500, done);
+		})
+
 		it('should throw an exception if "failureFlash" is used without "failureRedirect"', function (done) {
 
 			var app = express();
