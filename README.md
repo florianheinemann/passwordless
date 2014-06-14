@@ -270,6 +270,12 @@ passwordless.addDelivery(function(tokenToSend, uidToSend, recipient, callback) {
 	// send the token to recipient
 }, { ttl: 1000*60*10 });
 ```
+### Different tokens
+To be finalized
+
+## The tokens
+To be finalized
+
 ## Full API documentation
 To be finalized
 
