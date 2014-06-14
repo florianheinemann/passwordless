@@ -37,7 +37,6 @@ var email   = require("emailjs");
 
 ### 3. Setup your delivery
 Depending on how you want to deliver your tokens, this could look like this for emailjs:
-
 ```javascript
 var smtpServer  = email.server.connect({
    user:    yourEmail, 
@@ -48,7 +47,7 @@ var smtpServer  = email.server.connect({
 ```
 
 ### 4. Initialize Passwordless
-Simple:
+`passwordless.init()` will take your TokenStore, which will store the generated tokens.
 ```javascript
 // Your MongoDB TokenStore
 var pathToMongoDb = 'mongodb://localhost/passwordless-simple-mail';
