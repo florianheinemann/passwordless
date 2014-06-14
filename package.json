@@ -34,6 +34,7 @@
     "express": "^4.1.1",
     "express-session": "^1.0.4",
     "grunt": "^0.4.4",
+    "grunt-jsdoc": "^0.5.4",
     "grunt-mocha-test": "^0.10.2",
     "mocha": "^1.18.2",
     "passwordless-tokenstore-test": "0.0.10",
