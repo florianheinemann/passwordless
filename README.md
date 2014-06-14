@@ -135,24 +135,24 @@ If you have just a fixed list of users do the following:
 // GET login as above
 
 var users = [
-   { id: 1, email: 'marc@example.com' },
-   { id: 2, email: 'alice@example.com' }
+	{ id: 1, email: 'marc@example.com' },
+	{ id: 2, email: 'alice@example.com' }
 ];
 
 /* POST login details. */
 router.post('/sendtoken', 
 	passwordless.requestToken(
 		function(user, delivery, callback) {
-         for (var i = users.length - 1; i >= 0; i--) {
-	         if(users[i].email === user.toLowerCase()) {
-	            return callback(null, users[i].id);
-	         }
-         };
-         callback(null, null);
+			for (var i = users.length - 1; i >= 0; i--) {
+				if(users[i].email === user.toLowerCase()) {
+				return callback(null, users[i].id);
+				}
+			}
+			callback(null, null);
 		}),
-	function(req, res) {
-	   // success!
-  		res.render('sent');
+		function(req, res) {
+			// success!
+		res.render('sent');
 });
 ```
 
@@ -250,7 +250,7 @@ router.get('/mistake',
 ### 2-step authentication (e.g. for SMS)
 For some token-delivery channels you want to have the shortest possible token (e.g. for text messages). One way to do so is to transport only the token while keeping the UID in the session. In such a scenario the user would type in his phone number, hit submit, be redirected to another page where she has to type in the received token, and then hit submit another time. To achieve this, requestToken stores the requested UID in `req.passwordless.uidToAuth`. Putting it all together, take the following steps:
 
-1. Read out `req.passwordless.uidToAuth`
+**1: Read out `req.passwordless.uidToAuth`**
 
 ```javascript
 // Display a new form after the user has submitted the phone number
@@ -260,7 +260,7 @@ router.post('/sendtoken', passwordless.requestToken(function(...) { },
 });
 ```
 
-2. Display another form to submit the token submitting the UID in a hidden input
+**2: Display another form to submit the token submitting the UID in a hidden input**
 
 ```html
 <html>
@@ -277,7 +277,7 @@ router.post('/sendtoken', passwordless.requestToken(function(...) { },
 </html>
 ```
 
-3. Allow POST to accept tokens
+**3: Allow POST to accept tokens**
 
 ```javascript
 router.post('/auth', passwordless.acceptToken({ allowPost: true }),
