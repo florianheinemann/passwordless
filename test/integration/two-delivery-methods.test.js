@@ -52,7 +52,8 @@ describe('passwordless', function() {
 			it('should have sent a token', function () {
 				expect(mocks.delivered.length).to.equal(1);
 				expect(mocks.delivered[0].token).to.have.length.above(0);
-				expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
+				expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
+				expect(mocks.delivered[0].recipient).to.equal(mocks.alice().email);
 				expect(mocks.delivered[0].delivery).to.equal('email');
 			})
 
@@ -66,7 +67,8 @@ describe('passwordless', function() {
 			it('should have sent a token', function () {
 				expect(mocks.delivered.length).to.equal(2);
 				expect(mocks.delivered[1].token).to.have.length.above(0);
-				expect(mocks.delivered[1].user).to.equal(mocks.marc().id);
+				expect(mocks.delivered[1].uid).to.equal(mocks.marc().id);
+				expect(mocks.delivered[1].recipient).to.equal(mocks.marc().phone);
 				expect(mocks.delivered[1].delivery).to.equal('sms');
 			})
 
@@ -84,13 +86,13 @@ describe('passwordless', function() {
 
 			it('should allow access to a restricted resource with a proper token - 1/2', function (done) {
 				agent1
-					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].user)
+					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].uid)
 					.expect(200, done);
 			})
 
 			it('should allow access to a restricted resource with a proper token - 2/2', function (done) {
 				agent2
-					.get('/restricted?token=' + mocks.delivered[1].token + '&uid=' + mocks.delivered[1].user)
+					.get('/restricted?token=' + mocks.delivered[1].token + '&uid=' + mocks.delivered[1].uid)
 					.expect(200, done);
 			})
 

@@ -52,7 +52,8 @@ describe('passwordless', function() {
 			it('should have sent a token', function () {
 				expect(mocks.delivered.length).to.equal(1);
 				expect(mocks.delivered[0].token).to.have.length.above(0);
-				expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
+				expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
+				expect(mocks.delivered[0].recipient).to.equal(mocks.alice().email);
 				expect(mocks.delivered[0].delivery).to.equal('long');
 			})
 
@@ -66,14 +67,15 @@ describe('passwordless', function() {
 			it('should have sent a token', function () {
 				expect(mocks.delivered.length).to.equal(2);
 				expect(mocks.delivered[1].token).to.have.length.above(0);
-				expect(mocks.delivered[1].user).to.equal(mocks.marc().id);
+				expect(mocks.delivered[1].uid).to.equal(mocks.marc().id);
+				expect(mocks.delivered[1].recipient).to.equal(mocks.marc().email);
 				expect(mocks.delivered[1].delivery).to.equal('short');
 			})
 
 			it('should even after 200ms successfully log in with the standard ttl token', function (done) {
 				setTimeout(function() {
 					agent1
-					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].user)
+					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].uid)
 					.expect(200, done);				
 				}, 200)
 			})
@@ -81,7 +83,7 @@ describe('passwordless', function() {
 			it('should reject a log in with a short ttl token after 200ms', function (done) {
 				setTimeout(function() {
 					agent2
-					.get('/restricted?token=' + mocks.delivered[1].token + '&uid=' + mocks.delivered[1].user)
+					.get('/restricted?token=' + mocks.delivered[1].token + '&uid=' + mocks.delivered[1].uid)
 					.expect(401, done);				
 				}, 200)
 			})

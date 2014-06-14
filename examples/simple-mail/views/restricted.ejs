@@ -4,7 +4,7 @@
     <link rel='stylesheet' href='/stylesheets/style.css' type='text/css'>
   </head>
   <body>
-    <h1>Passwordless - Example: Simple-Mail</h1>
+    <h1>Restricted page!</h1>
     <p>
     User: 
     <% if(user) { %>
@@ -13,12 +13,15 @@
     	Not logged in
     <% } %>
     </p>
+    <p>
+    This page is only accessible for authenticated users! Psssss... This is a secret!
+    </p>
     <ul>
       <li>
-        <a href='/login'>Login / Register</a>
+        <a href='/'>Back to homepage</a>
       </li>
       <li>
-        <a href='/restricted'>Restricted page</a>
+        <a href='/login'>Login / Register</a>
       </li>
     </ul>
   </body>

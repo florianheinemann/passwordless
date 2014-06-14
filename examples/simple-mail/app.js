@@ -6,7 +6,9 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var bodyParser = require('body-parser');
 
-var passwordless = require('passwordless');
+// var passwordless = require('passwordless');
+var passwordless = require('../../');
+
 var MongoStore = require('passwordless-mongostore');
 var email   = require("emailjs");
 
@@ -15,9 +17,9 @@ var routes = require('./routes/index');
 var app = express();
 
 // TODO: email setup (has to be changed)
-var yourEmail = 'YOUR EMAIL ACCOUNT';
-var yourPwd = 'YOUR EMAIL PASSWORD';
-var yourSmtp = 'SMTP server, such as: smtp.gmail.com';
+var yourEmail = 'pwdlessjs@gmail.com';
+var yourPwd = 'MxxHu3k4pv8MorKC*y.HrLuK?';
+var yourSmtp = 'smtp.gmail.com';
 var smtpServer  = email.server.connect({
    user:    yourEmail, 
    password: yourPwd, 
@@ -33,17 +35,14 @@ var host = 'http://localhost:3000/';
 
 // Setup of Passwordless
 passwordless.init(new MongoStore(pathToMongoDb));
-passwordless.add(
-    function(contactToVerify, callback) {
-        // Check if given email is valid (always true for this demo)
-        callback(null, contactToVerify);
-    }, 
-    function(tokenToSend, user, callback) {
+passwordless.addDelivery(
+    function(tokenToSend, uidToSend, recipient, callback) {
         // Send out token
         smtpServer.send({
-           text:    'Hello!\nYou can now access your account here: ' + host + '?token=' + tokenToSend, 
+           text:    'Hello!\nYou can now access your account here: ' 
+                + host + '?token=' + tokenToSend + '&uid=' + encodeURIComponent(uidToSend), 
            from:    yourEmail, 
-           to:      user,
+           to:      recipient,
            subject: 'Token for ' + host
         }, function(err, message) { 
             if(err) {

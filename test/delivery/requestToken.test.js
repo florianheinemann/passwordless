@@ -116,7 +116,8 @@ describe('passwordless', function() {
 			it('should have sent and stored token', function (done) {
 				expect(mocks.delivered.length).to.equal(1);
 				expect(mocks.delivered[0].token).to.have.length.above(20);
-				expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
+				expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
+				expect(mocks.delivered[0].recipient).to.equal(mocks.alice().email);
 				store.length(function(err, count) {
 					expect(count).to.equal(1);
 					store.clear(function(err) {
@@ -135,7 +136,8 @@ describe('passwordless', function() {
 			it('should have sent and stored token', function (done) {
 				expect(mocks.delivered.length).to.equal(2);
 				expect(mocks.delivered[1].token).to.have.length.above(20);
-				expect(mocks.delivered[1].user).to.equal(mocks.marc().id);
+				expect(mocks.delivered[1].uid).to.equal(mocks.marc().id);
+				expect(mocks.delivered[1].recipient).to.equal(mocks.marc().email);
 				store.length(function(err, count) {
 					expect(count).to.equal(1);
 					store.clear(function(err) {
@@ -179,7 +181,7 @@ describe('passwordless', function() {
 			it('should have sent and stored token', function () {
 				expect(mocks.delivered.length).to.equal(1);
 				expect(mocks.delivered[0].token).to.equal('random');
-				expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
+				expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
 			})
 		})
 
@@ -389,14 +391,15 @@ describe('passwordless', function() {
 				it('should verify a proper user and set req.passwordless.uidToAuth to the user\'s UID', function (done) {
 					agent
 						.post('/login')
-						.send( { phone: mocks.alice().email } )
+						.send( { phone: mocks.alice().phone } )
 						.expect(200, mocks.alice().id.toString(), done);
 				})
 
 				it('should have sent a token', function () {
 					expect(mocks.delivered.length).to.equal(1);
 					expect(mocks.delivered[0].token).to.exist;
-					expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
+					expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
+					expect(mocks.delivered[0].recipient).to.equal(mocks.alice().phone);
 				})
 			})
 
@@ -426,7 +429,8 @@ describe('passwordless', function() {
 				it('should have sent a token', function () {
 					expect(mocks.delivered.length).to.equal(1);
 					expect(mocks.delivered[0].token).to.exist;
-					expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
+					expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
+					expect(mocks.delivered[0].recipient).to.equal(mocks.alice().phone);
 					expect(mocks.delivered[0].delivery).to.equal('sms');
 				})
 			})
@@ -482,7 +486,8 @@ describe('passwordless', function() {
 				it('should have sent a token', function () {
 					expect(mocks.delivered.length).to.equal(1);
 					expect(mocks.delivered[0].token).to.exist;
-					expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
+					expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
+					expect(mocks.delivered[0].recipient).to.equal(mocks.alice().email);
 				})
 			})
 

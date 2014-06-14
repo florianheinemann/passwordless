@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel='stylesheet' href='/stylesheets/style.css' type='text/css'>
   </head>
   <body>
     <h1>Passwordless - Login</h1>
@@ -15,13 +16,16 @@
     <p>
     <form action="/sendtoken" method="POST">
       Email:
-      <br><input name="email" type="text">
+      <br><input name="user" type="text">
       <br><input type="submit" value="Login / Register">
     </form>
     </p>
     <ul>
       <li>
         <a href='/'>Back to homepage</a>
+      </li>
+      <li>
+        <a href='/restricted'>Restricted page</a>
       </li>
     </ul>
   </body>

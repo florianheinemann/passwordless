@@ -78,7 +78,8 @@ describe('passwordless', function() {
 			it('should have sent a token', function () {
 				expect(mocks.delivered.length).to.equal(1);
 				expect(mocks.delivered[0].token).to.have.length.above(0);
-				expect(mocks.delivered[0].user).to.equal(mocks.alice().id);
+				expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
+				expect(mocks.delivered[0].recipient).to.equal(mocks.alice().phone);
 			})
 
 			it('should still not allow access to restricted resources', function (done) {
@@ -90,7 +91,7 @@ describe('passwordless', function() {
 			it('should accept the authentication with the supplied token and user ID', function (done) {
 				agent
 					.post('/auth')
-					.send( { token: mocks.delivered[0].token, uid: mocks.delivered[0].user })
+					.send( { token: mocks.delivered[0].token, uid: mocks.delivered[0].uid })
 					.expect(200, done);
 			})
 

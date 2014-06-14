@@ -1,10 +1,19 @@
 var express = require('express');
-var passwordless = require('passwordless');
 var router = express.Router();
+
+// var passwordless = require('passwordless');
+var passwordless = require('../../../');
+
 
 /* GET home page. */
 router.get('/', function(req, res) {
   res.render('index', { user: req.user });
+});
+
+/* GET restricted site. */
+router.get('/restricted', passwordless.restricted(),
+ function(req, res) {
+  res.render('restricted', { user: req.user });
 });
 
 /* GET login screen. */
@@ -19,9 +28,21 @@ router.get('/logout', passwordless.logout(),
 });
 
 /* POST login screen. */
-router.post('/sendtoken', passwordless.requestToken(),
+router.post('/sendtoken', 
+	passwordless.requestToken(
+		// Simply accept every user
+		function(user, delivery, callback) {
+			callback(null, user);
+			// usually you would want something like:
+			// User.find({email: user}, callback(ret) {
+			// 		if(ret)
+			// 			callback(null, ret.id)
+			// 		else
+			// 			callback(null, null)
+			// })
+		}),
 	function(req, res) {
-  res.render('sent');
+  		res.render('sent');
 });
 
 module.exports = router;

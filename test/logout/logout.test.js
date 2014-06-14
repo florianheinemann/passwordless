@@ -62,7 +62,7 @@ describe('passwordless', function() {
 
 			it('should forward to the requested URL with valid token', function (done) {
 				agent
-					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].user)
+					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].uid)
 					.expect(200, 'authenticated', done);
 			});
 

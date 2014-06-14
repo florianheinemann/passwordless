@@ -1,7 +1,7 @@
 {
-  "name": "testapp",
+  "name": "passwordless-simple-mail",
+  "private": "true",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
     "start": "node app.js"
   },
@@ -13,7 +13,7 @@
     "express": "~4.2.0",
     "express-session": "^1.2.1",
     "morgan": "~1.0.0",
-    "passwordless-mongostore": "0.0.2",
+    "passwordless-mongostore": "0.0.6",
     "static-favicon": "~1.0.0"
   }
 }

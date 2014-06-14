@@ -11,19 +11,17 @@ function Mocks() {
 
 Mocks.prototype.deliveryMockSend = function(name) {
 	var self = this;
-	return function(tokenToSend, uid, done) {
+	return function(tokenToSend, uidToSend, recipient, done) {
 			setTimeout(function() {
-				if(uid === 107) {
+				if(uidToSend === 107) {
 					return done('error');
 				}
 
-				self.delivered.push({ token: tokenToSend, user: uid, delivery: name });
+				self.delivered.push({ token: tokenToSend, uid: uidToSend, recipient: recipient, delivery: name });
 				done();
 			}, 0);
 		}
 	}
-
-
 
 Mocks.prototype.getUserId = function() {
 	var self = this;
