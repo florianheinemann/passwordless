@@ -366,7 +366,7 @@ Just remove `app.use(passwordless.sessionSupport());` middleware. Every request 
 By default, the tokens are UUIDs/GUIDs generated according to [RFC4122](http://www.ietf.org/rfc/rfc4122.txt) Version 4 and as implemented by [node-uuid](https://github.com/broofa/node-uuid). They can be considered strong enough for the purpose but should be combined with a finite time-to-live (set by default to 1h). In addition, it is absolutely mandatory to store the tokens securely by hashing and salting them (done by default in TokenStores such as [MongoStore](https://github.com/florianheinemann/passwordless-mongostore). Security can be further increased bu limiting the number of tries per UID before calling `TokenStore.invalidateUser(uid, callback)` combined with a login-lock for the UID.
 
 ## Full API documentation
-To be finalized
+See the /docs folder
 
 ## Tests
 Download the whole repository and call:
