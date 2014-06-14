@@ -63,13 +63,13 @@ describe('passwordless', function() {
 				.expect(200, done);
 		})
 
-		it('should redirect to the given URL if "notAuthRedirect" is provided and user not authorized', function (done) {
+		it('should redirect to the given URL if "failureRedirect" is provided and user not authorized', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.get('/restricted', passwordless.restricted({ notAuthRedirect: '/login' }),
+			app.get('/restricted', passwordless.restricted({ failureRedirect: '/login' }),
 				function(req, res){
 					res.send(200, 'authenticated');
 			});
@@ -80,14 +80,14 @@ describe('passwordless', function() {
 				.expect('location', '/login', done);
 		})
 
-		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided (simple)', function (done) {
+		it('should redirect and pass the original URL if not authorized if "originField" is provided (simple)', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login',
-														originUrlParam: 'origin' }),
+			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login',
+														originField: 'origin' }),
 				function(req, res){
 					res.send(200, 'authenticated');
 			});
@@ -98,14 +98,14 @@ describe('passwordless', function() {
 				.expect('location', '/login?origin=%2Frestricted%3Fid%3D3', done);
 		})
 
-		it('should redirect and pass the original URL if not authorized if "originUrlParam" is provided (additional param)', function (done) {
+		it('should redirect and pass the original URL if not authorized if "originField" is provided (additional param)', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login?mode=test&lang=en',
-																originUrlParam: 'origin' }),
+			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login?mode=test&lang=en',
+																originField: 'origin' }),
 				function(req, res){
 					res.send(200, 'authenticated');
 			});
@@ -116,7 +116,7 @@ describe('passwordless', function() {
 				.expect('location', '/login?mode=test&lang=en&origin=%2Frestricted%3Fid%3D3', done);
 		})
 
-		describe('flashUserNotAuth', function() {
+		describe('flashFailure', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
@@ -127,8 +127,8 @@ describe('passwordless', function() {
 
 			app.use(flash());
 
-			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login',
-																flashUserNotAuth: 'You are not authorized' }),
+			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login',
+																flashFailure: 'You are not authorized' }),
 				function(req, res){
 					res.send(200);
 			});
@@ -152,7 +152,7 @@ describe('passwordless', function() {
 					});
 			})
 
-			it('should flash a message if "flashUserNotAuth" is provided', function (done) {
+			it('should flash a message if "flashFailure" is provided', function (done) {
 				agent
 					.get('/login')
                     .set('Cookie', cookie)
@@ -160,14 +160,14 @@ describe('passwordless', function() {
 			})
 		})
 
-		it('should throw an exception if "flashUserNotAuth" is used without flash middleware', function (done) {
+		it('should throw an exception if "flashFailure" is used without flash middleware', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.get('/restricted', passwordless.restricted({ 	notAuthRedirect: '/login',
-																flashUserNotAuth: 'You are not authorized' }), 
+			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login',
+																flashFailure: 'You are not authorized' }), 
 				function(req, res){
 					res.send(200, 'authenticated');
 			});
@@ -177,7 +177,7 @@ describe('passwordless', function() {
 				.expect(500, done);
 		})
 
-		it('should throw an exception if "flashUserNotAuth" is used without "notAuthRedirect"', function (done) {
+		it('should throw an exception if "flashFailure" is used without "failureRedirect"', function (done) {
 
 			var app = express();
 			var passwordless = new Passwordless();
@@ -188,7 +188,7 @@ describe('passwordless', function() {
 
 			app.use(flash());
 
-			app.get('/restricted', passwordless.restricted({ flashUserNotAuth: 'You are not authorized' }), 
+			app.get('/restricted', passwordless.restricted({ flashFailure: 'You are not authorized' }), 
 				function(req, res){
 					res.send(200, 'authenticated');
 			});
