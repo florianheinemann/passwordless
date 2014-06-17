@@ -288,13 +288,15 @@ router.post('/auth', passwordless.acceptToken({ allowPost: true }),
 ### Successful login and redirect to origin
 Passwordless supports the redirect of users to the login page, remembering the original URL, and then redirecting them again to the originally requested page when the token has been submitted. Due to the many steps involved, several modifications have to be undertaken:
 
-**1: Set `originField` and `failureRedirect` for passwordless.restricted() **
+**1: Set `originField` and `failureRedirect` for passwordless.restricted()**
+
 Doing this will call `/login` with `/login?origin=/admin` to allow later reuse
 ```javascript
 router.get('/admin', passwordless.restricted( { originField: 'origin', failureRedirect: '/login' }));
 ```
 
 **2: Display `origin` as hidden field on the login page**
+
 Be sure to pass `origin` to the page renderer.
 ```html
 <form action="/sendtoken" method="POST">
@@ -306,15 +308,18 @@ Be sure to pass `origin` to the page renderer.
 ```
 
 **3: Let `requestToken()` accept `origin`**
+
 This will store the original URL next to the token in the TokenStore.
 ```javascript
-app.post('/sendtoken', passwordless.requestToken(function(...) { }, { originField: 'origin' }),
+app.post('/sendtoken', passwordless.requestToken(function(...) { }, 
+	{ originField: 'origin' }),
 	function(req, res){
 		// successfully sent
 });
 ```
 
 **4: Reconfigure `acceptToken()` middleware**
+
 ```javascript
 app.use(passwordless.acceptToken( { enableOriginRedirect: true } ));
 ```
