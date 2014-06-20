@@ -306,6 +306,29 @@ describe('passwordless', function() {
 				.get('/unrestricted?token=invalid&uid=invalid')
 				.expect(200, 'The submitted token for the given uid is not valid', done);
 		})
+		
+		it('should flash a success message if supplied token/uid is valid and "successFlash" is supplied', function (done) {
+
+			var app = express();
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMock());
+
+			app.use(cookieParser());
+			app.use(expressSession({ secret: '42' }));
+
+			app.use(flash());
+
+			app.use(passwordless.acceptToken({ successFlash: 'All good!' }));
+
+			app.get('/unrestricted',
+				function(req, res){
+					res.send(200, req.flash('passwordless-success')[0]);
+			});
+
+			request(app)
+				.get('/unrestricted?token=valid&uid=valid')
+				.expect(200, 'All good!', done);
+		})
 
 		it('should throw an exception if failureFlash is used without flash middleware', function (done) {
 
@@ -322,6 +345,24 @@ describe('passwordless', function() {
 
 			request(app)
 				.get('/unrestricted?token=invalid&uid=invalid')
+				.expect(500, done);
+		})
+
+		it('should throw an exception if successFlash is used without flash middleware', function (done) {
+
+			var app = express();
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMock());
+
+			app.use(passwordless.acceptToken({ successFlash: 'All good!' }));
+
+			app.get('/unrestricted',
+				function(req, res){
+					res.send(200);
+			});
+
+			request(app)
+				.get('/unrestricted?token=valid&uid=valid')
 				.expect(500, done);
 		})
 	})
