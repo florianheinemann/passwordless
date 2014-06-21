@@ -1,6 +1,6 @@
 {
   "name": "passwordless",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A node.js/express module for passwordless authentication",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,11 @@
     "nopassword",
     "password-less",
     "no-password",
-    "authentication"
+    "authentication",
+    "otpw",
+    "one-time-password",
+    "token",
+    "express"
   ],
   "author": "Florian Heinemann <florian.heinemann@gmail.com> (http://twitter.com/thesumofall)",
   "license": "MIT",
@@ -34,6 +38,7 @@
     "express": "^4.1.1",
     "express-session": "^1.0.4",
     "grunt": "^0.4.4",
+    "grunt-contrib-clean": "^0.5.0",
     "grunt-jsdoc": "^0.5.4",
     "grunt-mocha-test": "^0.10.2",
     "mocha": "^1.18.2",

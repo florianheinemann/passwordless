@@ -2,8 +2,12 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.loadNpmTasks('grunt-jsdoc');
+	grunt.loadNpmTasks('grunt-contrib-clean');
 
 	grunt.initConfig({
+		clean: {
+			docs: ['docs']
+		},
 		mochaTest: {
 			test: {
 				options: {
@@ -14,7 +18,7 @@ module.exports = function(grunt) {
 		},
 		jsdoc : {
 			dist : {
-				src: ['lib/**/*.js'], 
+				src: ['lib/passwordless/passwordless.js'], 
 				options: {
 					destination: 'docs'
 				}
@@ -22,5 +26,6 @@ module.exports = function(grunt) {
 		}
 	});
 
-	grunt.registerTask('test', ['mochaTest', 'jsdoc']);
+	grunt.registerTask('test', ['mochaTest']);
+	grunt.registerTask('docs', ['clean:docs', 'jsdoc']);
 };
