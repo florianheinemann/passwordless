@@ -595,6 +595,66 @@ describe('passwordless', function() {
 						.expect(500, done);
 				})
 			})
+
+			describe('option:successFlash', function() {
+				var mocks = new Mocks();
+				var app = express();
+				var passwordless = new Passwordless();
+				var store = new TokenStoreMock();
+				passwordless.init(store);
+
+				app.use(bodyParser());
+
+				app.use(cookieParser());
+				app.use(expressSession({ secret: '42' }));
+
+				app.use(flash());
+
+				passwordless.addDelivery(mocks.deliveryMockSend());
+
+				app.post('/login', passwordless.requestToken(mocks.getUserId(), { successFlash: 'All good!' }),
+					function(req, res){
+						res.send(200, req.flash('passwordless-success')[0]);
+				});
+
+				var agent = request.agent(app);
+
+				it('should verify a proper user flash a success message', function (done) {
+					agent
+						.post('/login')
+						.send( { user: mocks.alice().email } )
+						.expect(200, 'All good!', done);
+				})				
+			})
+
+			describe('option:successFlash (without flash middleware)', function() {
+				var mocks = new Mocks();
+				var app = express();
+				var passwordless = new Passwordless();
+				var store = new TokenStoreMock();
+				passwordless.init(store);
+
+				app.use(bodyParser());
+
+				app.use(cookieParser());
+				app.use(expressSession({ secret: '42' }));
+
+				passwordless.addDelivery(mocks.deliveryMockSend());
+
+				app.post('/login', passwordless.requestToken(mocks.getUserId(), { successFlash: 'All good!' }),
+					function(req, res){
+						res.send(200, (req.flash) ? req.flash('passwordless-success')[0] : '');
+				});
+
+				var agent = request.agent(app);
+
+				it('should throw an exception', function (done) {
+					agent
+						.post('/login')
+						.send( { user: mocks.alice().email } )
+						.expect(500, done);
+				})				
+			})
 		})
 
 		describe('without bodyParser', function() {
