@@ -2,7 +2,7 @@
 
 Passwordless is a node.js module for [express](http://expressjs.com/) that allows *authentication* and *authorization* without passwords by simply sending one-time password (OTPW) tokens via email or other means. It utilizes a very similar mechanism as many sites use for resetting passwords. The module was inspired by Justin Balthrop's aritcle "[Passwords are Obsolete](https://medium.com/@ninjudd/passwords-are-obsolete-9ed56d483eb)"
 
-Check out a [**demo**](https://passwordless.net) and further documentation on http://passwordless.net or have a look at an [**example**](https://github.com/florianheinemann/passwordless/tree/master/examples/simple-mail).
+Check out a [**demo**](https://passwordless.net) and further documentation on https://passwordless.net or have a look at an [**example**](https://github.com/florianheinemann/passwordless/tree/master/examples/simple-mail).
 
 The module is particularly useful if:
 * you would like to avoid the implicit risks of passwords (such as users reusing them across sites), or
