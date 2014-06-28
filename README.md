@@ -19,7 +19,7 @@ The following should provide a quick-start in using Passwordless. If you need mo
 
 `$ npm install passwordless --save`
 
-Usually you also want to install a TokenStore such as [MongoStore](https://github.com/florianheinemann/passwordless-mongostore) and something to deliver the tokens (be it email, SMS or any other means). For example:
+Usually you also want to install a TokenStore such as [MongoStore](https://github.com/florianheinemann/passwordless-mongostore) or [RedisStore](https://github.com/florianheinemann/passwordless-redisstore) and something to deliver the tokens (be it email, SMS or any other means). For example:
 
 `$ npm install passwordless-mongostore --save`
 
