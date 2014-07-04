@@ -107,7 +107,6 @@ describe('passwordless', function() {
 					return str;
 				}
 
-
 				app.get('/restricted', passwordless.restricted(),
 					function(req, res){
 						res.send(200, 'authenticated');
@@ -211,6 +210,100 @@ describe('passwordless', function() {
 					request(app)
 						.get('/acceptToken?token=marc&uid=marc')
 						.expect(200, 'no redirect happened', done);
+				})
+			})
+		})
+
+		describe('option:successRedirect', function() {
+			describe('successful authentication', function() {
+				var app = express();
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMock());
+
+				app.get('/acceptToken', passwordless.acceptToken({ successRedirect: '/success' }),
+					function(req, res){
+						res.send(200, 'no redirect happened');
+				});
+
+				it('should redirect the user after successful authentication', function (done) {
+					request(app)
+						.get('/acceptToken?token=valid&uid=valid')
+						.expect(302)
+						.expect('location', '/success', done);
+				})
+			})
+
+			describe('unsuccessful authentication', function() {
+				var app = express();
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMock());
+
+				app.get('/acceptToken', passwordless.acceptToken({ successRedirect: '/success' }),
+					function(req, res){
+						res.send(200, 'no redirect happened');
+				});
+
+				it('should redirect the user after successful authentication', function (done) {
+					request(app)
+						.get('/acceptToken?token=invalid&uid=invalid')
+						.expect(200, 'no redirect happened', done);
+				})
+			})
+
+			describe('successful authentication with POST tokens', function() {
+				var app = express();
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMock());
+
+				app.use(bodyParser());
+
+				app.post('/acceptToken', passwordless.acceptToken({ allowPost: true, successRedirect: '/success' }),
+					function(req, res){
+						res.send(200, 'no redirect happened');
+				});
+
+				it('should redirect the user after successful authentication', function (done) {
+					request(app)
+						.post('/acceptToken')
+						.send({ token: 'valid', uid: 'valid' })
+						.expect(302)
+						.expect('location', '/success', done);
+				})
+			})
+
+			describe('successful authentication combined with enableOriginRedirect and redirect target', function() {
+				var app = express();
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMock());
+
+				app.get('/acceptToken', passwordless.acceptToken({ enableOriginRedirect: true, successRedirect: '/success' }),
+					function(req, res){
+						res.send(200, 'no redirect happened');
+				});
+
+				it('should overwrite successRedirect and instead use origin', function (done) {
+					request(app)
+						.get('/acceptToken?token=marc&uid=marc')
+						.expect(302)
+						.expect('location', 'http://example.com/marc', done);
+				})
+			})
+
+			describe('successful authentication combined with enableOriginRedirect but no redirect target', function() {
+				var app = express();
+				var passwordless = new Passwordless();
+				passwordless.init(new TokenStoreMock());
+
+				app.get('/acceptToken', passwordless.acceptToken({ enableOriginRedirect: true, successRedirect: '/success' }),
+					function(req, res){
+						res.send(200, 'no redirect happened');
+				});
+
+				it('should use successRedirect and ignore enableOriginRedirect', function (done) {
+					request(app)
+						.get('/acceptToken?token=tom&uid=tom')
+						.expect(302)
+						.expect('location', '/success', done);
 				})
 			})
 		})
