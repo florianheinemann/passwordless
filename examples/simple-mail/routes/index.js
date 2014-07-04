@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
+// TODO: In production please require the proper module
 // var passwordless = require('passwordless');
 var passwordless = require('../../../');
 
@@ -42,6 +43,8 @@ router.post('/sendtoken',
 			// })
 		}),
 	function(req, res) {
+		// Token was successfully delivered, else 
+		// requestToken would have return an error page
   		res.render('sent');
 });
 

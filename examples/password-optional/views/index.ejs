@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='/stylesheets/style.css' type='text/css'>
+  </head>
+  <body>
+    <h1>Passwordless - Example: Password optional</h1>
+    <p>This example shows an exampe how to leave it up to the user if she wants to provide a password. Should she decide
+    to register / login without a passpord she would automatically receive a token via email. Otherwise, a standard username / 
+    password combination will be expected.</p>
+    <p>Please be aware that keeping the password removes any of the security benefits of a token-based approach for those who
+    decide to provide a password. However, this approach might be a good first step to test a passwordless approach on a 
+    website and to gather first user feedback on it.
+    <p>Please make sure to check all the needed configurations in the app.js and config.js files.</p>
+    <p>
+    User: 
+    <% if(user) { %>
+    	<%= user %> (<a href='/logout'>logout</a>)
+    <% } else { %>
+    	Not logged in
+    <% } %>
+    </p>
+    <ul>
+      <li>
+        <a href='/login'>Login / Register</a>
+      </li>
+      <li>
+        <a href='/restricted'>Restricted page</a>
+      </li>
+    </ul>
+  </body>
+</html>

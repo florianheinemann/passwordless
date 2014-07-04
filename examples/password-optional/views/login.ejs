@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='/stylesheets/style.css' type='text/css'>
+  </head>
+  <body>
+    <h1>Passwordless - Login</h1>
+    <p>
+    User: 
+    <% if(user) { %>
+    	<%= user %> (<a href='/logout'>logout</a>)
+    <% } else { %>
+    	Not logged in
+    <% } %>
+    </p>
+    <p>
+    <p>To register / login just provide your email address. For each login we'll send you a login token via email.</p>
+    <p>Should you prefer to login via email and password, feel free to provide a password.<p>
+    <form action="/login" method="POST">
+      Email:
+      <br><input name="user" type="email">
+      <br>Password (optional!):
+      <br><input name="password" type="password">
+      <br><input type="submit" value="Login / Register">
+    </form>
+    </p>
+    <ul>
+      <li>
+        <a href='/'>Back to the homepage</a>
+      </li>
+      <li>
+        <a href='/restricted'>Restricted page</a>
+      </li>
+    </ul>
+  </body>
+</html>
