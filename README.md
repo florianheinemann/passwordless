@@ -93,7 +93,7 @@ app.use(passwordless.acceptToken({ successRedirect: '/'}));
 
 `acceptToken()` will accept incoming tokens and authenticate the user (see the URL in step 5). While the option `successRedirect` is not strictly needed, it is strongly recommended to use it to avoid leaking valid tokens via the referrer header of outgoing HTTP links on your site. When provided, the user will be forwarded to the given URL as soon as she has been authenticated.
 
-If you like, you could also restrict that to certain URLs:
+If you like, you can also restrict the acceptance of tokens to certain URLs:
 ```javascript
 // Accept tokens only on /logged_in (be sure to change the
 // URL you deliver in step 5)
@@ -232,7 +232,7 @@ router.get('/logout', passwordless.logout(),
 ```
 
 ### Redirects
-Redirect non-authorized users who try to access protected resources with `failureRedirect` (default is a 401 error page):
+Redirect non-authorised users who try to access protected resources with `failureRedirect` (default is a 401 error page):
 ```javascript
 router.get('/restricted', 
 	passwordless.restricted({ failureRedirect: '/login' });
@@ -248,6 +248,13 @@ router.post('/login',
 		// success
 });
 ```
+
+After the successful authentication through `acceptToken()`, you can redirect the user to a specific URL with `successRedirect`:
+```javascript
+app.use(passwordless.acceptToken(
+	{ successRedirect: '/' }));
+```
+While the option `successRedirect` is not strictly needed, it is strongly recommended to use it to avoid leaking valid tokens via the referrer header of outgoing HTTP links on your site. When provided, the user will be forwarded to the given URL as soon as she has been authenticated. If not provided, Passwordless will simply call the next middleware.
 
 ### Error flashes
 Error flashes are session-based error messages that are pushed to the user with the next request. For example, you might want to show a certain message when the user authentication was not successful or when a user was redirected after accessing a resource she should not have access to. To make this work, you need to have sessions enabled and a flash middleware such as [connect-flash](https://www.npmjs.org/package/connect-flash) installed.
@@ -437,7 +444,7 @@ passwordless.addDelivery(
 ```
 
 ### Stateless operation
-Just remove `app.use(passwordless.sessionSupport());` middleware. Every request for a restricted resource has then to be combined with a token and uid. Please consider the limited lifetime of tokens. You might want to extend it in such cases.
+Just remove the `app.use(passwordless.sessionSupport());` middleware. Every request for a restricted resource has then to be combined with a token and uid. Please consider the limited lifetime of tokens. You might want to extend it in such cases. Also, make sure you don't use `successRedirect` on the `acceptToken()` middleware.
 
 ## The tokens and security
 By default, the tokens are UUIDs/GUIDs generated according to [RFC4122](http://www.ietf.org/rfc/rfc4122.txt) Version 4 and as implemented by [node-uuid](https://github.com/broofa/node-uuid). They can be considered strong enough for the purpose but should be combined with a finite time-to-live (set by default to 1h). In addition, it is absolutely mandatory to store the tokens securely by hashing and salting them (done by default in TokenStores such as [MongoStore](https://github.com/florianheinemann/passwordless-mongostore). Security can be further increased bu limiting the number of tries per UID before calling `TokenStore.invalidateUser(uid, callback)` combined with a login-lock for the UID.
