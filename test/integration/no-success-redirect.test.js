@@ -26,21 +26,16 @@ describe('passwordless', function() {
 			app.use(expressSession({ secret: '42' }));
 
 			app.use(passwordless.sessionSupport());
-			app.use(passwordless.acceptToken({ successRedirect: '/success' }));
+			app.use(passwordless.acceptToken());
 
 			app.get('/unrestricted',
 				function(req, res){
 					res.send(200);
 			});
 
-			app.get('/success', passwordless.restricted(),
-				function(req, res){
-					res.send(200, 'successful authentication');
-			});
-
 			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
-					res.send(200, 'restricted resource');
+					res.send(200, 'authenticated');
 			});
 
 			app.post('/login', passwordless.requestToken(mocks.getUserId()),
@@ -90,13 +85,12 @@ describe('passwordless', function() {
 			it('should allow access to a restricted resource with a proper token', function (done) {
 				agent
 					.get('/restricted?token=' + mocks.delivered[0].token + '&uid=' + mocks.delivered[0].uid)
-					.expect(302)
-					.expect('location', '/success', done);
+					.expect(200, done);
 			})
 
 			it('should now allow access to a restricted resource without a token', function (done) {
 				agent
-					.get('/success')
+					.get('/restricted')
 					.expect(200, done);
 			})
 

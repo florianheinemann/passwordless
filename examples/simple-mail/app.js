@@ -67,7 +67,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Passwordless middleware
 app.use(passwordless.sessionSupport());
-app.use(passwordless.acceptToken());
+app.use(passwordless.acceptToken({ successRedirect: '/' }));
 
 // CHECK /routes/index.js to better understand which routes are needed at a minimum
 app.use('/', routes);

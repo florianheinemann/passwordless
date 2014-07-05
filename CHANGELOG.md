@@ -1,3 +1,18 @@
+# 1.1.3 (2014-07-05)
+
+Bugfixes:
+
+	N/A
+
+Features:
+
+	add successRedirect option for acceptToken
+
+Documentation
+
+	update to include successRedirect option
+	update of smaller typos
+
 # 1.1.2 (2014-06-26)
 
 Bugfixes:
