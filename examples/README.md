@@ -1,5 +1,7 @@
 # Examples
 
+Please always run `npm install` before starting any of the provided examples.
+
 ## Demos
 * Simple-mail - The simplest possible implementation of Passwordless
 * Password-optional - Example how to implement a login with optional password

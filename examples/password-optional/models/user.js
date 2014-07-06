@@ -4,7 +4,7 @@ var util = require('util');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var crypto = require('crypto');
-var config = require('./config');
+var config = require('../config');
 
 var userSchema = new Schema({
 	email: 		{ type: String, required: true },
@@ -13,7 +13,7 @@ var userSchema = new Schema({
 });
 
 userSchema.methods.verifyPassword = function(password, callback) {
-	if(!password)
+	if(!password || !this.hash)
 		return callback(null, false);
 
 	var originalHash = this.hash;
@@ -74,8 +74,8 @@ userSchema.statics.hashPassword = function(plainPassword, salt, callback) {
 
 userSchema.statics.hasUser = function(email, callback) {
 	if(!email)
-		return callback('No email provided')
-	this.findOne({ email: new RegExp('^'+email+'$', "i") }, callback});
+		return callback('No email provided');
+	this.findOne({ email: new RegExp('^'+email+'$', "i") }, callback);
 };
 
 userSchema.statics.createUser = function(email, password, callback) {

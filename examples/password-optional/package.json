@@ -12,6 +12,7 @@
     "emailjs": "^0.3.8",
     "express": "~4.2.0",
     "express-session": "^1.2.1",
+    "mongoose": "^3.8.12",
     "morgan": "~1.0.0",
     "passwordless-mongostore": "0.0.6",
     "static-favicon": "~1.0.0"

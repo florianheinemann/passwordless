@@ -33,7 +33,7 @@ router.get('/login', function(req, res) {
 router.post('/login',
 	function(req, res, next) {
 		// Password provided
-		if(req.body.password.length >= 0) {
+		if(req.body.password && req.body.password.length > 0) {
 			// Does the user already exist?
 			User.hasUser(req.body.user, function(error, user) {
 				if(user) {
@@ -42,7 +42,7 @@ router.post('/login',
 						// Password valid?
 						if(user) {
 							// Yes, store user in request and session
-							req.user = req.session.passwordless = user.email;
+							req.user = req.session.passwordless = user.id;
 							// Redirect to homepage
 							res.redirect(301, '/');
 						} else { // Password not valid
@@ -53,32 +53,31 @@ router.post('/login',
 					User.createUser(req.body.user, req.body.password, function(error, user) {
 						if(error)
 							throw new Error(error);
-						// Stpre user in request and session
-						req.user = req.session.passwordless = user.email;
+						// Store user in request and session
+						req.user = req.session.passwordless = user.id;
 						// Redirect to homepage
 						res.redirect(301, '/');
 					});
 				}
 			})
-		} else {
-			passwordless.requestToken(
-				function(user, delivery, callback) {
-					// Check that user is valid or create one
-					User.hasUser(req.body.user, function(error, user) {
-						if(user) {
-							// User exist - return her to Passwordless to send the token
-							callback(null, user.email);
-						} else {
-							// User doesn't exist - create the user and give her to Passwordless
-							User.createUser(req.body.user, null, function(error, user) {
-								callback(error, (user) ? user.email : null);
-							})
-						}
-					})
-				})
 		}
-
 	},
+	// No password provided --> simply request token
+	passwordless.requestToken(
+		function(user, delivery, callback) {
+			// Check that user is valid or create one
+			User.hasUser(req.body.user, function(error, user) {
+				if(user) {
+					// User exist - return her to Passwordless to send the token
+					callback(null, user.id);
+				} else {
+					// User doesn't exist - create the user and give her to Passwordless
+					User.createUser(req.body.user, null, function(error, user) {
+						callback(error, (user) ? user.id : null);
+					})
+				}
+			})
+		}),
 	function(req, res) {
 		// Token was successfully delivered, else 
 		// requestToken would have return an error page
