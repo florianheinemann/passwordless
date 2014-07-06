@@ -1,3 +1,18 @@
+# 1.1.4 (2014-07-06)
+
+Bugfixes:
+
+	N/A
+
+Features:
+
+	add breaking change: by default allowTokenReuse is set to false
+	add option: allowTokenReuse to define wether users are allow to re-use tokens
+
+Documentation
+
+	update to include allowTokenReuse option
+
 # 1.1.3 (2014-07-05)
 
 Bugfixes:
