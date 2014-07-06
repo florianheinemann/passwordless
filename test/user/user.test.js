@@ -121,7 +121,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMock(true));
+			passwordless.init(new TokenStoreMock(true), { allowTokenReuse: true });
 
 			app.use(passwordless.acceptToken());
 
