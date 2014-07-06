@@ -16,7 +16,7 @@ describe('passwordless', function() {
 
 			var app = express();
 			var passwordless = new Passwordless();
-			passwordless.init(new TokenStoreMock({integration:true}));
+			passwordless.init(new TokenStoreMock({integration:true}), {allowTokenReuse: true});
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
 			app.use(bodyParser());
