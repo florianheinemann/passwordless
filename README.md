@@ -38,7 +38,7 @@ var email   = require("emailjs");
 ```
 
 ### 3. Setup your delivery
-This is very much depending on what you use to deliver your tokens, but if you use emailjs this could like this:
+This is very much depending on how you want to deliver your tokens, but if you use emailjs this could look like this:
 ```javascript
 var smtpServer  = email.server.connect({
    user:    yourEmail, 
