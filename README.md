@@ -49,7 +49,7 @@ var smtpServer  = email.server.connect({
 ```
 
 ### 4. Initialize Passwordless
-`passwordless.init()` will take your TokenStore, which will store the generated tokens.
+`passwordless.init()` will take your TokenStore, which will store the generated tokens as shown below for a MongoStore:
 ```javascript
 // Your MongoDB TokenStore
 var pathToMongoDb = 'mongodb://localhost/passwordless-simple-mail';
@@ -89,11 +89,11 @@ app.use(passwordless.sessionSupport());
 app.use(passwordless.acceptToken({ successRedirect: '/'}));
 ```
 
-`sessionSupport()` makes the login persistent, so the user will stay logged in while browsing your site. It has to come after your session middleware. Have a look at [express-session](https://github.com/expressjs/session) how to setup sessions if you are unsure.
+`sessionSupport()` makes the login persistent, so the user will stay logged in while browsing your site. Make sure to have added your session middleware *before* this line. Have a look at [express-session](https://github.com/expressjs/session) how to setup sessions if you are unsure.
 
-`acceptToken()` will accept incoming tokens and authenticate the user (see the URL in step 5). While the option `successRedirect` is not strictly needed, it is strongly recommended to use it to avoid leaking valid tokens via the referrer header of outgoing HTTP links on your site. When provided, the user will be forwarded to the given URL as soon as she has been authenticated.
+`acceptToken()` will accept incoming tokens and authenticate the user (see the URL in step 5). While the option `successRedirect` is not strictly needed, it is strongly recommended to use it to avoid leaking valid tokens via the referrer header of outgoing HTTP links. When provided, the user will be forwarded to the given URL as soon as she has been authenticated.
 
-If you like, you can also restrict the acceptance of tokens to certain URLs:
+Instead of accepting tokens on any URL as done above you can also restrict the acceptance of tokens to certain URLs:
 ```javascript
 // Accept tokens only on /logged_in (be sure to change the
 // URL you deliver in step 5)
@@ -120,7 +120,7 @@ router.get('/login', function(req, res) {
 /* POST login details. */
 router.post('/sendtoken', 
 	passwordless.requestToken(
-		// Turn the email address into an user ID
+		// Turn the email address into an user's ID
 		function(user, delivery, callback) {
 			// usually you would want something like:
 			User.find({email: user}, callback(ret) {
@@ -143,7 +143,7 @@ What happens here? `passwordless.requestToken(getUserId)` has two tasks: Making 
 
 Most likely, you want a user registration page where you take an email address and any other user details and generate an ID. However, you can also simply accept any email address by skipping the lookup and just calling `callback(null, user)`.
 
-If you have just a fixed list of users do the following:
+In an even simpler scenario and if you just have a fixed list of users do the following:
 ```javascript
 // GET login as above
 
@@ -194,20 +194,20 @@ router.get('/restricted', passwordless.restricted(),
   // render the secret page
 });
 ```
-You can also protect a full path, by doing:
+You can also protect a full path, by adding:
 ```javascript
 router.use('/admin', passwordless.restricted());
 ```
 
 ### 10. Who is logged in?
-Passwordless stores the user ID in req.user (at least by default). So, if you want to display the user's details or use them for further requests, do something like:
+Passwordless stores the user ID in req.user (this can be changed via configuration). So, if you want to display the user's details or use them for further requests, do something like:
 ```javascript
 router.get('/admin', passwordless.restricted(),
 	function(req, res) {
 		res.render('admin', { user: req.user });
 });
 ```
-You could also create a middleware that is adding the user to any request and enriching it with all the user details. Make sure, though, that you are adding this middleware after `acceptToken()` and `sessionSupport()`:
+You could also create a middleware that is adding the user to any request and enriching it with all user details. Make sure, though, that you are adding this middleware after `acceptToken()` and `sessionSupport()`:
 ```javascript
 app.use(function(req, res, next) {
 	if(req.user) {
