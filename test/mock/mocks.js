@@ -2,6 +2,7 @@
 
 function Mocks() {
 	this.delivered = [];
+	this.request = null;
 	this.userDb = [
 		{id: 101, email: 'marc@example.com', phone: '+1-555-555-5555'},
 		{id: 103, email: 'alice@example.com', phone: '+1-777-777-7777'},
@@ -25,8 +26,9 @@ Mocks.prototype.deliveryMockSend = function(name) {
 
 Mocks.prototype.getUserId = function() {
 	var self = this;
-	return function(user, delivery, callback) {
+	return function(user, delivery, callback, req) {
 		setTimeout(function() {
+			self.request = req;
 			if(user === 'error') {
 				// For unit test purposes
 				return callback('Some error', null);
