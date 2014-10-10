@@ -150,6 +150,38 @@ describe('passwordless', function() {
 				expect(mocks.delivered[1].token).to.not.equal(mocks.delivered[0].token);
 			})
 		})
+		describe('passing of request object', function() {
+
+			var mocks = new Mocks();
+
+			var app = express();
+			var passwordless = new Passwordless();
+			var store = new TokenStoreMock();
+			passwordless.init(store);
+
+			app.use(bodyParser());
+
+			passwordless.addDelivery(mocks.deliveryMockSend());
+
+			app.post('/login', passwordless.requestToken(mocks.getUserId()),
+				function(req, res){
+					res.send(200, req.passwordless.uidToAuth.toString());
+			});
+
+			var agent = request.agent(app);
+
+			it('should verify a proper user and set req.passwordless.uidToAuth to the user\'s UID', function (done) {
+				agent
+					.post('/login')
+					.send( { user: mocks.alice().email, age: '32' } )
+					.expect(200, mocks.alice().id.toString(), done);
+			})
+
+			it('should have passed the request object to the getUserId function', function (done) {
+				expect(mocks.request.body['age']).to.equal('32');
+				done();
+			})
+		})
 
 		describe('different tokenAlgorithm', function() {
 

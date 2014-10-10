@@ -1,3 +1,17 @@
+# 1.1.4 (2014-10-10)
+
+Bugfixes:
+
+	N/A
+
+Features:
+
+	update requestToken to pass the request object to getUserId
+
+Documentation
+
+	N/A
+
 # 1.1.3 (2014-07-05)
 
 Bugfixes:
