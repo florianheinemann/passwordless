@@ -6,8 +6,8 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var bodyParser = require('body-parser');
 
-// var passwordless = require('passwordless');
-var passwordless = require('../../');
+var passwordless = require('passwordless');
+//var passwordless = require('../../');
 
 var MongoStore = require('passwordless-mongostore');
 var email   = require("emailjs");

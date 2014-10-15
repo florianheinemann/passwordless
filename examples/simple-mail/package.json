@@ -13,6 +13,7 @@
     "express": "~4.2.0",
     "express-session": "^1.2.1",
     "morgan": "~1.0.0",
+    "passwordless": "^0.1.5",
     "passwordless-mongostore": "0.0.6",
     "static-favicon": "~1.0.0"
   }

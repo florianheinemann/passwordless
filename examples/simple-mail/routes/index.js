@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-// var passwordless = require('passwordless');
-var passwordless = require('../../../');
+var passwordless = require('passwordless');
+// var passwordless = require('../../../');
 
 
 /* GET home page. */
