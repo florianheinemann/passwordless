@@ -1,3 +1,14 @@
+# 1.0.1 (2014-10-18)
+
+Bugfixes:
+- N/A
+
+Features:
+- UPDATED error description for a particular case in requestToken
+
+Documentation:
+- N/A
+
 # 1.0.0 (2014-10-15)
 
 Bugfixes:
