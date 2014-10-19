@@ -139,7 +139,7 @@ router.post('/sendtoken',
 });
 ```
 
-What happens here? `passwordless.requestToken(getUserId)` has two tasks: Making sure the email address exists *and* transforming it into a proper user ID that will become the identifier from now on. For example user@example.com becomes 123 or 'u1002'. You call `callback(null, ID)` if all is good, `callback(null, null)` if you don't know this email address, and `callback('error', null)` if something went wrong.
+What happens here? `passwordless.requestToken(getUserId)` has two tasks: Making sure the email address exists *and* transforming it into a proper user ID that will become the identifier from now on. For example user@example.com becomes 123 or 'u1002'. You call `callback(null, ID)` if all is good, `callback(null, null)` if you don't know this email address, and `callback('error', null)` if something went wrong. At this stage, please make sure that you've added middleware to parse POST data (such as [body-parser](https://github.com/expressjs/body-parser)).
 
 Most likely, you want a user registration page where you take an email address and any other user details and generate an ID. However, you can also simply accept any email address by skipping the lookup and just calling `callback(null, user)`.
 
