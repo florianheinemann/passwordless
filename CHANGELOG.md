@@ -4,7 +4,7 @@ Bugfixes:
 - N/A
 
 Features:
-- UPDATED error description for a particular case in requestToken
+- UPDATED error description involving req.body to be clearer
 
 Documentation:
 - N/A
