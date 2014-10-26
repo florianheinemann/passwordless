@@ -1,3 +1,14 @@
+# 1.0.2 (2014-10-25)
+
+Bugfixes:
+- ADD save-session before redirect to avoid a bug in express
+
+Features:
+- N/A
+
+Documentation:
+- N/A
+
 # 1.0.1 (2014-10-18)
 
 Bugfixes:
