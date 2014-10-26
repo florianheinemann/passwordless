@@ -1,6 +1,6 @@
 {
   "name": "passwordless",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A node.js/express module for passwordless authentication",
   "main": "index.js",
   "scripts": {
@@ -42,10 +42,10 @@
     "grunt-jsdoc": "^0.5.4",
     "grunt-mocha-test": "^0.10.2",
     "mocha": "^1.18.2",
-    "passwordless-tokenstore-test": "0.0.10",
+    "passwordless-tokenstore-test": "*",
     "supertest": "^0.12.0"
   },
   "dependencies": {
-    "node-uuid": "^1.4.1"
+    "base58-native": "^0.1.4"
   }
 }

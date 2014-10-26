@@ -1,3 +1,17 @@
+# 1.0.3 (2014-10-25)
+
+Bugfixes:
+- N/A
+
+Features:
+- UPDATE token generator to ensure use of Node.js' strong crypro lib
+- UPDATE token generator to produce shorter Base58 tokens
+- ADD dependency to base58-native
+- REMOVE dependency to node-uuid
+
+Documentation:
+- N/A
+
 # 1.0.2 (2014-10-25)
 
 Bugfixes:
