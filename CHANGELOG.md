@@ -1,3 +1,14 @@
+# 1.0.4 (2014-10-29)
+
+Bugfixes:
+- FIXED wrong capitalization of lib/passwordless folder
+
+Features:
+- UPDATE dependency of Base58 encoder to bs58 (pure JS)
+
+Documentation:
+- N/A
+
 # 1.0.3 (2014-10-25)
 
 Bugfixes:
