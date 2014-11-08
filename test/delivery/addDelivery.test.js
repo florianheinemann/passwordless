@@ -58,6 +58,27 @@ describe('passwordless', function() {
 			}).to.throw(Error);
 		});
 
+		it('shall throw an Error if options:numberToken is of wrong format', function () {
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMock());
+			expect(function() {
+				passwordless.addDelivery('email', mocks.deliveryMockSend(), {numberToken: '10'})
+			}).to.throw(Error);
+		});
+
+		it('shall throw an Error if options:tokenAlgorithm is used together with option:numberToken', function () {
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMock());
+			expect(function() {
+				passwordless.addDelivery('email', mocks.deliveryMockSend(), {
+					tokenAlgorithm: function() { return "random"},
+					numberToken: {
+						max: 9999
+					}
+				})
+			}).to.throw(Error);
+		});
+
 		it('shall throw an Error if a second default delivery method is added', function () {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());

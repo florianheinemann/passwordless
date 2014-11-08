@@ -1,6 +1,6 @@
 {
   "name": "passwordless",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A node.js/express module for passwordless authentication",
   "main": "index.js",
   "scripts": {
