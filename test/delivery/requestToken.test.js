@@ -218,6 +218,42 @@ describe('passwordless', function() {
 			})
 		})
 
+		describe('addDelivery option: numberToken', function() {
+
+			var mocks = new Mocks();
+
+			var app = express();
+			var passwordless = new Passwordless();
+			passwordless.init(new TokenStoreMock());
+
+			app.use(bodyParser());
+
+			passwordless.addDelivery(mocks.deliveryMockSend(), {
+				numberToken: { max: 9999 }
+			});
+
+			app.post('/login', passwordless.requestToken(mocks.getUserId()),
+				function(req, res){
+					res.send(200, req.passwordless.uidToAuth.toString());
+			});
+
+			var agent = request.agent(app);
+
+			it('should verify a proper user and set req.passwordless.uidToAuth to the user\'s UID', function (done) {
+				mocks.delivered = [];
+				agent
+					.post('/login')
+					.send( { user: mocks.alice().email } )
+					.expect(200, mocks.alice().id.toString(), done);
+			})
+
+			it('should have sent and stored token', function () {
+				expect(mocks.delivered.length).to.equal(1);
+				expect(mocks.delivered[0].token).to.be.within(0, 9999);
+				expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
+			})
+		})
+
 		describe('not initialized', function() {
 
 			var mocks = new Mocks();

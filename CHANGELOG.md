@@ -1,3 +1,14 @@
+# 1.0.5 (2014-11-07)
+
+Bugfixes:
+- N/A
+
+Features:
+- ADD addDelivery options.numberToken to generate number-based tokens
+
+Documentation:
+- Small update to include numberToken
+
 # 1.0.4 (2014-10-29)
 
 Bugfixes:
