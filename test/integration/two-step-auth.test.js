@@ -12,7 +12,7 @@ var Mocks = require('../mock/mocks.js');
 
 describe('passwordless', function() {
 	describe('integration', function() {
-		describe('standard', function() {
+		describe('two-step-auth', function() {
 
 			var mocks = new Mocks();
 

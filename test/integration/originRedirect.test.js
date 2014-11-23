@@ -76,7 +76,7 @@ describe('passwordless', function() {
 			it('should have stored and sent a token', function () {
 				var lastRecord = store.lastRecord();
 				expect(lastRecord).to.exist;
-				expect(lastRecord.uid).to.equal(mocks.alice().id);
+				expect(lastRecord.uid).to.equal(mocks.alice().id.toString());
 				expect(lastRecord.origin).to.equal('/restricted/demo');
 
 				expect(mocks.delivered.length).to.equal(1);
