@@ -1,3 +1,14 @@
+# 1.0.7 (2014-11-23)
+
+Bugfixes:
+- FIXED handling of UIDs as numbers can cause issues with MongoDB
+
+Features:
+- N/A
+
+Documentation:
+- N/A
+
 # 1.0.6 (2014-11-23)
 
 Bugfixes:
