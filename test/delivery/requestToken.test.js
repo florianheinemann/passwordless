@@ -477,6 +477,7 @@ describe('passwordless', function() {
 				var app = express();
 				var passwordless = new Passwordless();
 				passwordless.init(new TokenStoreMock());
+				app.use(bodyParser());
 
 				passwordless.addDelivery('email', mocks.deliveryMockSend('email'));
 				passwordless.addDelivery('sms', mocks.deliveryMockSend('sms'));
@@ -492,6 +493,7 @@ describe('passwordless', function() {
 					mocks.delivered = [];
 					agent
 						.get('/login?user=' + encodeURIComponent(mocks.alice().phone) + '&delivery=sms')
+						.send( { random: 'data' }) // ensuring POST data does trigger POST anlaysis
 						.expect(200, mocks.alice().id.toString(), done);
 				})
 

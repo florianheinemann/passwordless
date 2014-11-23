@@ -1,3 +1,14 @@
+# 1.0.6 (2014-11-23)
+
+Bugfixes:
+- FIXED handling of allowGet for requestToken does not get tripped by request body data
+
+Features:
+- N/A
+
+Documentation:
+- N/A
+
 # 1.0.5 (2014-11-07)
 
 Bugfixes:
