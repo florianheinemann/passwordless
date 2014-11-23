@@ -378,7 +378,7 @@ describe('passwordless', function() {
 					it('should not have stored the origin URL', function () {
 						var lastRecord = store.lastRecord();
 						expect(lastRecord).to.exist;
-						expect(lastRecord.uid).to.equal(mocks.alice().id);
+						expect(lastRecord.uid).to.equal(mocks.alice().id.toString());
 						expect(lastRecord.origin).to.not.eixst;
 					})
 				})
@@ -412,7 +412,7 @@ describe('passwordless', function() {
 					it('should not have stored the origin URL', function () {
 						var lastRecord = store.lastRecord();
 						expect(lastRecord).to.exist;
-						expect(lastRecord.uid).to.equal(mocks.alice().id);
+						expect(lastRecord.uid).to.equal(mocks.alice().id.toString());
 						expect(lastRecord.origin).to.equal(origin);
 					})					
 				})

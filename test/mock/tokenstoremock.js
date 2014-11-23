@@ -102,7 +102,7 @@ TokenStoreMock.prototype.length = function(callback) {
 TokenStoreMock.prototype._findRecord = function(uid, token) {
 	for (var i = this.records.length - 1; i >= 0; i--) {
 		var record = this.records[i];
-		if((!uid || record.uid == uid) && (!token || token === record.token)) {
+		if((!uid || record.uid === uid) && (!token || token === record.token)) {
 			return i;
 		}
 	};
