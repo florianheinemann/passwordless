@@ -31,12 +31,12 @@ describe('passwordless', function() {
 
 			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			app.post('/login', passwordless.requestToken(mocks.getUserId()),
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			var agent1 = request.agent(app);

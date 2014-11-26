@@ -1,3 +1,14 @@
+# 1.0.8 (2014-11-26)
+
+Bugfixes:
+- N/A
+
+Features:
+- UPDATE res.send(status) to res.status.send() in line with Express API changes. Backwards compatible to Express 3.x
+
+Documentation:
+- N/A
+
 # 1.0.7 (2014-11-23)
 
 Bugfixes:

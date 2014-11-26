@@ -31,17 +31,17 @@ describe('passwordless', function() {
 					
 				app.get('/protected', passwordless.restricted(),
 					function(req, res){
-						res.send(200, (req[userProperty]) ? req[userProperty] : '{none}' );
+						res.status(200).send((req[userProperty]) ? req[userProperty] : '{none}' );
 				});
 					
 				app.get('/logout', passwordless.logout(),
 					function(req, res){
-						res.send(200, (req[userProperty]) ? req[userProperty] : '{none}' );
+						res.status(200).send((req[userProperty]) ? req[userProperty] : '{none}' );
 				});
 					
 				app.get('/not-protected',
 					function(req, res){
-						res.send(200, (req[userProperty]) ? req[userProperty] : '{none}' );
+						res.status(200).send((req[userProperty]) ? req[userProperty] : '{none}' );
 				});
 
 				var agent = request.agent(app);
@@ -127,17 +127,17 @@ describe('passwordless', function() {
 
 			app.get('/protected', passwordless.restricted(),
 				function(req, res){
-					res.send(200, (req.user) ? req.user : '{none}' );
+					res.status(200).send((req.user) ? req.user : '{none}' );
 			});
 				
 			app.get('/logout', passwordless.logout(),
 				function(req, res){
-					res.send(200, (req.user) ? req.user : '{none}' );
+					res.status(200).send((req.user) ? req.user : '{none}' );
 			});
 				
 			app.get('/not-protected',
 				function(req, res){
-					res.send(200, (req.user) ? req.user : '{none}' );
+					res.status(200).send((req.user) ? req.user : '{none}' );
 			});
 
 			var agent = request.agent(app);
@@ -205,7 +205,7 @@ describe('passwordless', function() {
 				
 			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
-					res.send(200, (req.user) ? req.user : '{none}' );
+					res.status(200).send((req.user) ? req.user : '{none}' );
 			});
 
 			var agent = request.agent(app);

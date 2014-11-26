@@ -22,7 +22,7 @@ describe('passwordless', function() {
 
 			app.get('/unrestricted',
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			request(app)
@@ -39,7 +39,7 @@ describe('passwordless', function() {
 			app.use(passwordless.acceptToken());
 
 			app.get('/unrestricted', function(req, res) {
-					res.send(200);
+					res.status(200).send();
 			});
 
 			request(app)
@@ -55,7 +55,7 @@ describe('passwordless', function() {
 			app.use(passwordless.acceptToken());
 
 			app.get('/unrestricted', function(req, res) {
-					res.send(200);
+					res.status(200).send();
 			});
 
 			request(app)
@@ -109,12 +109,12 @@ describe('passwordless', function() {
 
 				app.get('/restricted', passwordless.restricted(),
 					function(req, res){
-						res.send(200, 'authenticated');
+						res.status(200).send('authenticated');
 				});
 
 				app.post('/restricted', passwordless.restricted(),
 					function(req, res){
-						res.send(200, 'authenticated');
+						res.status(200).send('authenticated');
 				});
 
 				it('should not give access to restricted resources and return 401 if no token / uid is provided', function (done) {
@@ -165,7 +165,7 @@ describe('passwordless', function() {
 
 				app.get('/acceptToken', passwordless.acceptToken({ enableOriginRedirect: true }),
 					function(req, res){
-						res.send(200, 'no redirect happened');
+						res.status(200).send('no redirect happened');
 				});
 
 				it('should redirect after successful authentication', function (done) {
@@ -184,7 +184,7 @@ describe('passwordless', function() {
 
 				app.get('/acceptToken', passwordless.acceptToken({ enableOriginRedirect: true }),
 					function(req, res){
-						res.send(200, 'no redirect happened');
+						res.status(200).send('no redirect happened');
 				});
 
 				it('should simply continue through the middleware if no redirect target', function (done) {
@@ -202,7 +202,7 @@ describe('passwordless', function() {
 
 				app.get('/acceptToken', passwordless.acceptToken(),
 					function(req, res){
-						res.send(200, 'no redirect happened');
+						res.status(200).send('no redirect happened');
 				});
 
 				it('should simply continue through the middleware if no option set', function (done) {
@@ -222,7 +222,7 @@ describe('passwordless', function() {
 
 				app.get('/acceptToken', passwordless.acceptToken({ successRedirect: '/success' }),
 					function(req, res){
-						res.send(200, 'no redirect happened');
+						res.status(200).send('no redirect happened');
 				});
 
 				it('should redirect the user after successful authentication', function (done) {
@@ -240,7 +240,7 @@ describe('passwordless', function() {
 
 				app.get('/acceptToken', passwordless.acceptToken({ successRedirect: '/success' }),
 					function(req, res){
-						res.send(200, 'no redirect happened');
+						res.status(200).send('no redirect happened');
 				});
 
 				it('should redirect the user after successful authentication', function (done) {
@@ -259,7 +259,7 @@ describe('passwordless', function() {
 
 				app.post('/acceptToken', passwordless.acceptToken({ allowPost: true, successRedirect: '/success' }),
 					function(req, res){
-						res.send(200, 'no redirect happened');
+						res.status(200).send('no redirect happened');
 				});
 
 				it('should redirect the user after successful authentication', function (done) {
@@ -278,7 +278,7 @@ describe('passwordless', function() {
 
 				app.get('/acceptToken', passwordless.acceptToken({ enableOriginRedirect: true, successRedirect: '/success' }),
 					function(req, res){
-						res.send(200, 'no redirect happened');
+						res.status(200).send('no redirect happened');
 				});
 
 				it('should overwrite successRedirect and instead use origin', function (done) {
@@ -296,7 +296,7 @@ describe('passwordless', function() {
 
 				app.get('/acceptToken', passwordless.acceptToken({ enableOriginRedirect: true, successRedirect: '/success' }),
 					function(req, res){
-						res.send(200, 'no redirect happened');
+						res.status(200).send('no redirect happened');
 				});
 
 				it('should use successRedirect and ignore enableOriginRedirect', function (done) {
@@ -319,7 +319,7 @@ describe('passwordless', function() {
 
 			app.post('/restricted', passwordless.restricted(),
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			it('should give access if supplied token/uid is valid (POST) and POST is allowed', function (done) {
@@ -341,7 +341,7 @@ describe('passwordless', function() {
 
 				app.post('/restricted', passwordless.restricted(),
 					function(req, res){
-						res.send(200, 'authenticated');
+						res.status(200).send('authenticated');
 				});
 
 				request(app)
@@ -361,7 +361,7 @@ describe('passwordless', function() {
 
 			app.get('/unrestricted',
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			it('should deliver unrestricted resources if supplied token/uid is empty', function (done) {
@@ -392,7 +392,7 @@ describe('passwordless', function() {
 
 			app.get('/unrestricted',
 				function(req, res){
-					res.send(200, req.flash('passwordless')[0]);
+					res.status(200).send(req.flash('passwordless')[0]);
 			});
 
 			request(app)
@@ -415,7 +415,7 @@ describe('passwordless', function() {
 
 			app.get('/unrestricted',
 				function(req, res){
-					res.send(200, req.flash('passwordless-success')[0]);
+					res.status(200).send(req.flash('passwordless-success')[0]);
 			});
 
 			request(app)
@@ -433,7 +433,7 @@ describe('passwordless', function() {
 
 			app.get('/unrestricted',
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			request(app)
@@ -451,7 +451,7 @@ describe('passwordless', function() {
 
 			app.get('/unrestricted',
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			request(app)
