@@ -28,7 +28,7 @@ describe('passwordless', function() {
 
 			app.post('/login', passwordless.requestToken(mocks.getUserId()),
 				function(req, res){
-					res.send(200, req.passwordless.uidToAuth.toString());
+					res.status(200).send(req.passwordless.uidToAuth.toString());
 			});
 
 			var agent = request.agent(app);
@@ -166,7 +166,7 @@ describe('passwordless', function() {
 
 			app.post('/login', passwordless.requestToken(mocks.getUserId()),
 				function(req, res){
-					res.send(200, req.passwordless.uidToAuth.toString());
+					res.status(200).send(req.passwordless.uidToAuth.toString());
 			});
 
 			var agent = request.agent(app);
@@ -198,7 +198,7 @@ describe('passwordless', function() {
 
 			app.post('/login', passwordless.requestToken(mocks.getUserId()),
 				function(req, res){
-					res.send(200, req.passwordless.uidToAuth.toString());
+					res.status(200).send(req.passwordless.uidToAuth.toString());
 			});
 
 			var agent = request.agent(app);
@@ -234,7 +234,7 @@ describe('passwordless', function() {
 
 			app.post('/login', passwordless.requestToken(mocks.getUserId()),
 				function(req, res){
-					res.send(200, req.passwordless.uidToAuth.toString());
+					res.status(200).send(req.passwordless.uidToAuth.toString());
 			});
 
 			var agent = request.agent(app);
@@ -267,7 +267,7 @@ describe('passwordless', function() {
 
 			app.post('/login', passwordless.requestToken(mocks.getUserId()),
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			var agent = request.agent(app);
@@ -298,7 +298,7 @@ describe('passwordless', function() {
 
 			app.post('/login', passwordless.requestToken(),
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			var agent = request.agent(app);
@@ -329,7 +329,7 @@ describe('passwordless', function() {
 
 			app.post('/login', passwordless.requestToken({ userField: 'email' }),
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			var agent = request.agent(app);
@@ -363,7 +363,7 @@ describe('passwordless', function() {
 
 					app.post('/login', passwordless.requestToken(mocks.getUserId(), { }),
 						function(req, res){
-							res.send(200, req.passwordless.uidToAuth.toString());
+							res.status(200).send(req.passwordless.uidToAuth.toString());
 					});
 
 					var agent = request.agent(app);
@@ -396,7 +396,7 @@ describe('passwordless', function() {
 
 					app.post('/login', passwordless.requestToken(mocks.getUserId(), { originField: 'origin' }),
 						function(req, res){
-							res.send(200, req.passwordless.uidToAuth.toString());
+							res.status(200).send(req.passwordless.uidToAuth.toString());
 					});
 
 					var agent = request.agent(app);
@@ -430,7 +430,7 @@ describe('passwordless', function() {
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), { userField: 'phone' }),
 					function(req, res){
-						res.send(200, req.passwordless.uidToAuth.toString());
+						res.status(200).send(req.passwordless.uidToAuth.toString());
 				});
 
 				var agent = request.agent(app);
@@ -484,7 +484,7 @@ describe('passwordless', function() {
 
 				app.get('/login', passwordless.requestToken(mocks.getUserId(), { allowGet: true }),
 					function(req, res){
-						res.send(200, req.passwordless.uidToAuth.toString());
+						res.status(200).send(req.passwordless.uidToAuth.toString());
 				});
 
 				var agent = request.agent(app);
@@ -518,7 +518,7 @@ describe('passwordless', function() {
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), { failureRedirect: '/mistake' }),
 					function(req, res){
-						res.send(200, req.passwordless.uidToAuth.toString());
+						res.status(200).send(req.passwordless.uidToAuth.toString());
 				});
 
 				var agent = request.agent(app);
@@ -579,12 +579,12 @@ describe('passwordless', function() {
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), { 	failureRedirect: '/mistake',
 						failureFlash: 'Provided user not valid' }),
 					function(req, res){
-						res.send(200);
+						res.status(200).send();
 				});
 
 				app.get('/mistake',
 					function(req, res) {
-						res.send(200, req.flash('passwordless')[0]);
+						res.status(200).send(req.flash('passwordless')[0]);
 				});
 
 				var agent = request(app);
@@ -625,7 +625,7 @@ describe('passwordless', function() {
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), 
 					{ failureRedirect: '/mistake', failureFlash: 'Provided user not valid' }),
 					function(req, res){
-						res.send(200);
+						res.status(200).send();
 				});
 
 				var agent = request(app);
@@ -653,7 +653,7 @@ describe('passwordless', function() {
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), { failureFlash: 'Provided user not valid' }),
 					function(req, res){
-						res.send(200);
+						res.status(200).send();
 				});
 				
 				var agent = request(app);
@@ -685,7 +685,7 @@ describe('passwordless', function() {
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), { successFlash: 'All good!' }),
 					function(req, res){
-						res.send(200, req.flash('passwordless-success')[0]);
+						res.status(200).send(req.flash('passwordless-success')[0]);
 				});
 
 				var agent = request.agent(app);
@@ -714,7 +714,7 @@ describe('passwordless', function() {
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), { successFlash: 'All good!' }),
 					function(req, res){
-						res.send(200, (req.flash) ? req.flash('passwordless-success')[0] : '');
+						res.status(200).send((req.flash) ? req.flash('passwordless-success')[0] : '');
 				});
 
 				var agent = request.agent(app);
@@ -739,7 +739,7 @@ describe('passwordless', function() {
 			it('should throw an exception', function (done) {
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), function(req, res){
-					res.send(200);
+					res.status(200).send();
 				}));
 
 				var agent = request.agent(app);
@@ -760,7 +760,7 @@ describe('passwordless', function() {
 			it('should return a 500 page', function (done) {
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), function(req, res){
-					res.send(200);
+					res.status(200).send();
 				}));
 
 				var agent = request.agent(app);

@@ -19,7 +19,7 @@ describe('passwordless', function() {
 
 			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -37,7 +37,7 @@ describe('passwordless', function() {
 
 			app.get('/restricted',
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -55,7 +55,7 @@ describe('passwordless', function() {
 
 			app.get('/everyone',
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -71,7 +71,7 @@ describe('passwordless', function() {
 
 			app.get('/restricted', passwordless.restricted({ failureRedirect: '/login' }),
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -89,7 +89,7 @@ describe('passwordless', function() {
 			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login',
 														originField: 'origin' }),
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -107,7 +107,7 @@ describe('passwordless', function() {
 			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login?mode=test&lang=en',
 																originField: 'origin' }),
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -130,12 +130,12 @@ describe('passwordless', function() {
 			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login',
 																failureFlash: 'You are not authorized' }),
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			app.get('/login',
 				function(req, res) {
-					res.send(200, req.flash('passwordless')[0]);
+					res.status(200).send(req.flash('passwordless')[0]);
 			});
 
 			var agent = request(app);
@@ -169,7 +169,7 @@ describe('passwordless', function() {
 			app.get('/restricted', passwordless.restricted({ 	failureRedirect: '/login',
 																failureFlash: 'You are not authorized' }), 
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -190,7 +190,7 @@ describe('passwordless', function() {
 
 			app.get('/restricted', passwordless.restricted({ originField: 'origin' }), 
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -211,7 +211,7 @@ describe('passwordless', function() {
 
 			app.get('/restricted', passwordless.restricted({ failureFlash: 'You are not authorized' }), 
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -229,7 +229,7 @@ describe('passwordless', function() {
 
 			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)
@@ -247,7 +247,7 @@ describe('passwordless', function() {
 
 			app.get('/restricted', passwordless.restricted(),
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			request(app)

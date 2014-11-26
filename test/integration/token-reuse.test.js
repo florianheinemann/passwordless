@@ -30,17 +30,17 @@ describe('passwordless', function() {
 
 				app.get('/success', passwordless.restricted(),
 					function(req, res){
-						res.send(200, 'successful authentication');
+						res.status(200).send('successful authentication');
 				});
 
 				app.get('/restricted', passwordless.restricted(),
 					function(req, res){
-						res.send(200, 'restricted resource');
+						res.status(200).send('restricted resource');
 				});
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId()),
 					function(req, res){
-						res.send(200);
+						res.status(200).send();
 				});
 
 				var agent = request.agent(app), agent2 = request.agent(app);

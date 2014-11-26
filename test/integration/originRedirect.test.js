@@ -33,22 +33,22 @@ describe('passwordless', function() {
 
 			app.get('/restricted/demo',
 				function(req, res){
-					res.send(200, 'authenticated');
+					res.status(200).send('authenticated');
 			});
 
 			app.get('/home',
 				function(req, res){
-					res.send(200, 'homepage');
+					res.status(200).send('homepage');
 			});
 
 			app.get('/login',
 				function(req, res){
-					res.send(200, req.query.origin);
+					res.status(200).send(req.query.origin);
 			});
 
 			app.post('/login', passwordless.requestToken(mocks.getUserId(), { originField: 'origin' }),
 				function(req, res){
-					res.send(200);
+					res.status(200).send();
 			});
 
 			var agent = request.agent(app);

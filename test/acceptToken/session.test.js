@@ -26,7 +26,7 @@ describe('passwordless', function() {
 					
 				app.get('/protected', passwordless.restricted(),
 					function(req, res){
-						res.send(200, 'authenticated');
+						res.status(200).send('authenticated');
 				});
 
 				var agent = request.agent(app);
@@ -76,7 +76,7 @@ describe('passwordless', function() {
 						
 					app.get('/protected', passwordless.restricted(),
 						function(req, res){
-							res.send(200, 'authenticated');
+							res.status(200).send('authenticated');
 					});
 
 					var agent = request.agent(app);
