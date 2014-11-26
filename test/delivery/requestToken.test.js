@@ -572,7 +572,7 @@ describe('passwordless', function() {
 				app.use(bodyParser());
 
 				app.use(cookieParser());
-				app.use(expressSession({ secret: '42' }));
+				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
 
 				app.use(flash());
 
@@ -620,7 +620,7 @@ describe('passwordless', function() {
 				app.use(bodyParser());
 
 				app.use(cookieParser());
-				app.use(expressSession({ secret: '42' }));
+				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), 
 					{ failureRedirect: '/mistake', failureFlash: 'Provided user not valid' }),
@@ -649,7 +649,7 @@ describe('passwordless', function() {
 				app.use(bodyParser());
 
 				app.use(cookieParser());
-				app.use(expressSession({ secret: '42' }));
+				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), { failureFlash: 'Provided user not valid' }),
 					function(req, res){
@@ -677,7 +677,7 @@ describe('passwordless', function() {
 				app.use(bodyParser());
 
 				app.use(cookieParser());
-				app.use(expressSession({ secret: '42' }));
+				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
 
 				app.use(flash());
 
@@ -708,7 +708,7 @@ describe('passwordless', function() {
 				app.use(bodyParser());
 
 				app.use(cookieParser());
-				app.use(expressSession({ secret: '42' }));
+				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
 
 				passwordless.addDelivery(mocks.deliveryMockSend());
 

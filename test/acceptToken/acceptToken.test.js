@@ -384,7 +384,7 @@ describe('passwordless', function() {
 			passwordless.init(new TokenStoreMock());
 
 			app.use(cookieParser());
-			app.use(expressSession({ secret: '42' }));
+			app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
 
 			app.use(flash());
 
@@ -407,7 +407,7 @@ describe('passwordless', function() {
 			passwordless.init(new TokenStoreMock());
 
 			app.use(cookieParser());
-			app.use(expressSession({ secret: '42' }));
+			app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
 
 			app.use(flash());
 

@@ -24,7 +24,7 @@ describe('passwordless', function() {
 
 			app.use(bodyParser());
 			app.use(cookieParser());
-			app.use(expressSession( { secret: '42' } ));
+			app.use(expressSession( { secret: '42', resave: false, saveUninitialized:false } ));
 
 			app.use(passwordless.sessionSupport());
 			app.use(passwordless.acceptToken());
@@ -104,7 +104,7 @@ describe('passwordless', function() {
 
 			app.use(bodyParser());
 			app.use(cookieParser());
-			app.use(expressSession( { secret: '42' } ));
+			app.use(expressSession( { secret: '42', resave: false, saveUninitialized:false } ));
 
 			app.use(flash());
 
@@ -166,7 +166,7 @@ describe('passwordless', function() {
 
 			app.use(bodyParser());
 			app.use(cookieParser());
-			app.use(expressSession( { secret: '42' } ));
+			app.use(expressSession( { secret: '42', resave: false, saveUninitialized:false } ));
 
 			app.use(passwordless.sessionSupport());
 			app.use(passwordless.acceptToken());
@@ -215,7 +215,7 @@ describe('passwordless', function() {
 			passwordless.init(new TokenStoreMock());
 
 			app.use(cookieParser());
-			app.use(expressSession( { secret: '42' } ));
+			app.use(expressSession( { secret: '42', resave: false, saveUninitialized:false } ));
 				
 			app.get('/logout', passwordless.logout(),
 				function(req, res){
