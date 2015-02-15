@@ -121,7 +121,7 @@ router.get('/login', function(req, res) {
 router.post('/sendtoken', 
 	passwordless.requestToken(
 		// Turn the email address into an user's ID
-		function(user, delivery, callback) {
+		function(user, delivery, callback, req) {
 			// usually you would want something like:
 			User.find({email: user}, callback(ret) {
 			   if(ret)

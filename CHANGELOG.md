@@ -1,3 +1,15 @@
+# 1.0.9 (2015-02-14)
+
+Bugfixes:
+- N/A
+
+Features:
+- N/A
+
+Documentation:
+- Better documentation of all callbacks used in Passwordless
+- Clarification of Readme.md highlighting that req is passed to the callback
+
 # 1.0.8 (2014-11-26)
 
 Bugfixes:
