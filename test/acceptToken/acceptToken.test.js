@@ -255,7 +255,8 @@ describe('passwordless', function() {
 				var passwordless = new Passwordless();
 				passwordless.init(new TokenStoreMock());
 
-				app.use(bodyParser());
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({extended: false}));
 
 				app.post('/acceptToken', passwordless.acceptToken({ allowPost: true, successRedirect: '/success' }),
 					function(req, res){
@@ -314,7 +315,8 @@ describe('passwordless', function() {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 			app.use(passwordless.acceptToken( { allowPost: true } ));
 
 			app.post('/restricted', passwordless.restricted(),

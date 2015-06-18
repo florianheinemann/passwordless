@@ -22,7 +22,8 @@ describe('passwordless', function() {
 			var store = new TokenStoreMock();
 			passwordless.init(store);
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
@@ -160,7 +161,8 @@ describe('passwordless', function() {
 			var store = new TokenStoreMock();
 			passwordless.init(store);
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
@@ -192,7 +194,8 @@ describe('passwordless', function() {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			passwordless.addDelivery(mocks.deliveryMockSend(), {tokenAlgorithm: function() {return 'random'}});
 
@@ -226,7 +229,8 @@ describe('passwordless', function() {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			passwordless.addDelivery(mocks.deliveryMockSend(), {
 				numberToken: { max: 9999 }
@@ -261,7 +265,8 @@ describe('passwordless', function() {
 			var app = express();
 			var passwordless = new Passwordless();
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
@@ -292,7 +297,8 @@ describe('passwordless', function() {
 			var app = express();
 			var passwordless = new Passwordless();
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
@@ -323,7 +329,8 @@ describe('passwordless', function() {
 			var app = express();
 			var passwordless = new Passwordless();
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
@@ -357,7 +364,8 @@ describe('passwordless', function() {
 					var store = new TokenStoreMock();
 					passwordless.init(store);
 
-					app.use(bodyParser());
+					app.use(bodyParser.json());
+					app.use(bodyParser.urlencoded({extended: false}));
 
 					passwordless.addDelivery(mocks.deliveryMockSend());
 
@@ -390,7 +398,8 @@ describe('passwordless', function() {
 					var store = new TokenStoreMock();
 					passwordless.init(store);
 
-					app.use(bodyParser());
+					app.use(bodyParser.json());
+					app.use(bodyParser.urlencoded({extended: false}));
 
 					passwordless.addDelivery(mocks.deliveryMockSend());
 
@@ -424,7 +433,8 @@ describe('passwordless', function() {
 				var passwordless = new Passwordless();
 				passwordless.init(new TokenStoreMock());
 
-				app.use(bodyParser());
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({extended: false}));
 
 				passwordless.addDelivery(mocks.deliveryMockSend());
 
@@ -477,7 +487,9 @@ describe('passwordless', function() {
 				var app = express();
 				var passwordless = new Passwordless();
 				passwordless.init(new TokenStoreMock());
-				app.use(bodyParser());
+
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({extended: false}));
 
 				passwordless.addDelivery('email', mocks.deliveryMockSend('email'));
 				passwordless.addDelivery('sms', mocks.deliveryMockSend('sms'));
@@ -512,8 +524,9 @@ describe('passwordless', function() {
 				var passwordless = new Passwordless();
 				passwordless.init(new TokenStoreMock());
 
-				app.use(bodyParser());
-
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({extended: false}));
+				
 				passwordless.addDelivery(mocks.deliveryMockSend());
 
 				app.post('/login', passwordless.requestToken(mocks.getUserId(), { failureRedirect: '/mistake' }),
@@ -569,7 +582,8 @@ describe('passwordless', function() {
 				passwordless.init(new TokenStoreMock());
 				passwordless.addDelivery(mocks.deliveryMockSend());
 
-				app.use(bodyParser());
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({extended: false}));
 
 				app.use(cookieParser());
 				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
@@ -617,7 +631,8 @@ describe('passwordless', function() {
 				passwordless.init(new TokenStoreMock());
 				passwordless.addDelivery(mocks.deliveryMockSend());
 
-				app.use(bodyParser());
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({extended: false}));
 
 				app.use(cookieParser());
 				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
@@ -646,7 +661,8 @@ describe('passwordless', function() {
 				passwordless.init(new TokenStoreMock());
 				passwordless.addDelivery(mocks.deliveryMockSend());
 
-				app.use(bodyParser());
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({extended: false}));
 
 				app.use(cookieParser());
 				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
@@ -674,7 +690,8 @@ describe('passwordless', function() {
 				var store = new TokenStoreMock();
 				passwordless.init(store);
 
-				app.use(bodyParser());
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({extended: false}));
 
 				app.use(cookieParser());
 				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
@@ -705,7 +722,8 @@ describe('passwordless', function() {
 				var store = new TokenStoreMock();
 				passwordless.init(store);
 
-				app.use(bodyParser());
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({extended: false}));
 
 				app.use(cookieParser());
 				app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
@@ -755,7 +773,8 @@ describe('passwordless', function() {
 			var app = express();
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			it('should return a 500 page', function (done) {
 

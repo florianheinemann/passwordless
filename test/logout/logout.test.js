@@ -22,7 +22,9 @@ describe('passwordless', function() {
 			passwordless.init(tokenStore);
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
+
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42', resave: false, saveUninitialized:false } ));
 
@@ -102,7 +104,8 @@ describe('passwordless', function() {
 			passwordless.init(tokenStore);
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42', resave: false, saveUninitialized:false } ));
 
@@ -164,7 +167,8 @@ describe('passwordless', function() {
 			passwordless.init(tokenStore);
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 			app.use(cookieParser());
 			app.use(expressSession( { secret: '42', resave: false, saveUninitialized:false } ));
 

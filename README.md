@@ -89,7 +89,7 @@ app.use(passwordless.sessionSupport());
 app.use(passwordless.acceptToken({ successRedirect: '/'}));
 ```
 
-`sessionSupport()` makes the login persistent, so the user will stay logged in while browsing your site. Make sure to have added your session middleware *before* this line. Have a look at [express-session](https://github.com/expressjs/session) how to setup sessions if you are unsure.
+`sessionSupport()` makes the login persistent, so the user will stay logged in while browsing your site. Make sure to have added your session middleware *before* this line. Have a look at [express-session](https://github.com/expressjs/session) how to setup sessions if you are unsure. Please be aware: If you decide to use [cookie-session](https://github.com/expressjs/cookie-session) rather than e.g. express-session as your middleware you have to set `passwordless.init(tokenStore, {skipForceSessionSave:true})`
 
 `acceptToken()` will accept incoming tokens and authenticate the user (see the URL in step 5). While the option `successRedirect` is not strictly needed, it is strongly recommended to use it to avoid leaking valid tokens via the referrer header of outgoing HTTP links. When provided, the user will be forwarded to the given URL as soon as she has been authenticated.
 

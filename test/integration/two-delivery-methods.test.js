@@ -22,7 +22,8 @@ describe('passwordless', function() {
 			passwordless.addDelivery('email', mocks.deliveryMockSend('email'));
 			passwordless.addDelivery('sms', mocks.deliveryMockSend('sms'));
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 			app.use(cookieParser());
 			app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
 

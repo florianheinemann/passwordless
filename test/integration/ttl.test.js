@@ -22,7 +22,8 @@ describe('passwordless', function() {
 			passwordless.addDelivery('short', mocks.deliveryMockSend('short'), { ttl: 100 });
 			passwordless.addDelivery('long', mocks.deliveryMockSend('long'));
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 			app.use(cookieParser());
 			app.use(expressSession({ secret: '42', resave: false, saveUninitialized:false }));
 

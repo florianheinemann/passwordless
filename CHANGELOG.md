@@ -1,3 +1,16 @@
+# 1.1.0 (2015-06-18)
+
+Bugfixes:
+- N/A
+
+Features:
+- ADD option.skipForceSessionSave to support cookie-session middleware
+- UPDATE to latest dependencies
+- UPDATE example to work with latest dependencies
+
+Documentation:
+- N/A
+
 # 1.0.9 (2015-02-14)
 
 Bugfixes:

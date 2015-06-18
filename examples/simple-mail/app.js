@@ -1,6 +1,5 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
@@ -57,12 +56,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // Standard express setup
-app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-app.use(expressSession({secret: '42'}));
+app.use(expressSession({secret: '42', saveUninitialized: false, resave: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Passwordless middleware

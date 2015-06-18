@@ -19,7 +19,8 @@ describe('passwordless', function() {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			passwordless.addDelivery('email', mocks.deliveryMockSend('email'));
 			passwordless.addDelivery('sms', mocks.deliveryMockSend('sms'));
@@ -86,7 +87,8 @@ describe('passwordless', function() {
 			var passwordless = new Passwordless();
 			passwordless.init(new TokenStoreMock());
 
-			app.use(bodyParser());
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
 
 			passwordless.addDelivery('email', mocks.deliveryMockSend('email'));
 			passwordless.addDelivery('sms', mocks.deliveryMockSend('sms'));

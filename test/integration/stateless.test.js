@@ -19,8 +19,9 @@ describe('passwordless', function() {
 			passwordless.init(new TokenStoreMock({integration:true}), {allowTokenReuse: true});
 			passwordless.addDelivery(mocks.deliveryMockSend());
 
-			app.use(bodyParser());
-
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({extended: false}));
+			
 			app.use(passwordless.acceptToken());
 
 			app.get('/unrestricted',
