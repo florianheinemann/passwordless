@@ -34,7 +34,7 @@ You will need:
 ```javascript
 var passwordless = require('passwordless');
 var MongoStore = require('passwordless-mongostore');
-var email   = require("emailjs");
+var email   = require('emailjs');
 ```
 
 ### 3. Setup your delivery
