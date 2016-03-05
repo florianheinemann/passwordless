@@ -1,3 +1,14 @@
+# 1.1.1 (2016-03-05)
+
+Bugfixes:
+- N/A
+
+Features:
+- ADD pass of req object to the addDelivery callback
+
+Documentation:
+- ADD pass of req object to the addDelivery callback
+
 # 1.1.0 (2015-06-18)
 
 Bugfixes:

@@ -110,7 +110,7 @@ describe('passwordless', function() {
 			it('should verify a proper user and set req.passwordless.uidToAuth to the user\'s UID', function (done) {
 				agent
 					.post('/login')
-					.send( { user: mocks.alice().email } )
+					.send( { user: mocks.alice().email, field: 'test' } )
 					.expect(200, mocks.alice().id.toString(), done);
 			})
 
@@ -119,6 +119,8 @@ describe('passwordless', function() {
 				expect(mocks.delivered[0].token).to.have.length.above(20);
 				expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
 				expect(mocks.delivered[0].recipient).to.equal(mocks.alice().email);
+				expect(mocks.delivered[0].req.body['field']).to.equal('test');
+
 				store.length(function(err, count) {
 					expect(count).to.equal(1);
 					store.clear(function(err) {
