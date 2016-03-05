@@ -12,13 +12,13 @@ function Mocks() {
 
 Mocks.prototype.deliveryMockSend = function(name) {
 	var self = this;
-	return function(tokenToSend, uidToSend, recipient, done) {
+	return function(tokenToSend, uidToSend, recipient, done, req) {
 			setTimeout(function() {
 				if(uidToSend === 107) {
 					return done('error');
 				}
 
-				self.delivered.push({ token: tokenToSend, uid: uidToSend, recipient: recipient, delivery: name });
+				self.delivered.push({ token: tokenToSend, uid: uidToSend, recipient: recipient, delivery: name, req: req });
 				done();
 			}, 0);
 		}

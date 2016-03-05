@@ -65,7 +65,7 @@ That's how you could do this with emailjs:
 ```javascript
 // Set up a delivery service
 passwordless.addDelivery(
-	function(tokenToSend, uidToSend, recipient, callback) {
+	function(tokenToSend, uidToSend, recipient, callback, req) {
 		var host = 'localhost:3000';
 		smtpServer.send({
 			text:    'Hello!\nAccess your account here: http://' 
