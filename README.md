@@ -59,7 +59,7 @@ passwordless.init(new MongoStore(pathToMongoDb));
 ### 5. Tell Passwordless how to deliver a token
 `passwordless.addDelivery(deliver)` adds a new delivery mechanism. `deliver` is called whenever a token has to be sent. By default, the mechanism you choose should provide the user with a link in the following format:
 
-`http://www.example.com/token={TOKEN}&uid={UID}`
+`http://www.example.com/?token={TOKEN}&uid={UID}`
 
 That's how you could do this with emailjs:
 ```javascript
