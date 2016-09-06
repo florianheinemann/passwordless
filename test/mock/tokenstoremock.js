@@ -32,10 +32,11 @@ TokenStoreMock.prototype.authenticate = function(token, uid, callback) {
 		var found = self._findRecord(uid, token);
 
 		if(found >= 0 && self.records[found].validTill >= Date.now()) {
-			callback(null, true, self.records[found].origin);
+            var origin = self.records[found].origin;
+			callback(null, true, origin === null ? '' : origin);
 		} else {
 			callback(null, false, null);
-		}	
+		}
 	}, 0)
 };
 
