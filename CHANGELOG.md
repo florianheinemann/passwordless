@@ -1,3 +1,8 @@
+# 1.1.2 (2016-10-22)
+
+Bugfixes:
+- FIX _generateNumberToken converts the generated number into a string
+
 # 1.1.1 (2016-03-05)
 
 Bugfixes:
