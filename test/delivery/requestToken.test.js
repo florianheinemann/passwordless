@@ -255,6 +255,7 @@ describe('passwordless', function() {
 
 			it('should have sent and stored token', function () {
 				expect(mocks.delivered.length).to.equal(1);
+				expect(mocks.delivered[0].token).to.be.a('string');
 				expect(mocks.delivered[0].token).to.be.within(0, 9999);
 				expect(mocks.delivered[0].uid).to.equal(mocks.alice().id);
 			})
