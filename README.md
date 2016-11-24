@@ -183,7 +183,7 @@ All you need is a form where users enter their email address, for example:
 	</body>
 </html>
 ```
-By default, Passwordless will look for a field called `user` submitted via POST.
+By default, Passwordless will look for a field called `user` submitted via POST. You can change this behaviour by passing object with a property `userField` as a second argument of requestToken function.
 
 ### 9. Protect your pages
 You can protect all pages that should only be accessed by authenticated users by using the `passwordless.restricted()` middleware, for example:
