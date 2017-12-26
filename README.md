@@ -123,11 +123,12 @@ router.post('/sendtoken',
 		// Turn the email address into an user's ID
 		function(user, delivery, callback, req) {
 			// usually you would want something like:
-			User.find({email: user}, callback(ret) {
-			   if(ret)
-			      callback(null, ret.id)
-			   else
-			      callback(null, null)
+			User.find({email: user}, function (ret) {
+			   if (ret) {
+			      callback(null, ret.id);
+			   } else {
+			      callback(null, null);
+			   }
 	      })
 	      // but you could also do the following 
 	      // if you want to allow anyone:
