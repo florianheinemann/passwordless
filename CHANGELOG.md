@@ -1,3 +1,12 @@
+# 1.1.3 (2018-07-14)
+
+Bugfixes:
+- FIX a minor bug in the test suite
+
+Features:
+- UPDATED dependencies
+- ADD new, console-based example
+
 # 1.1.2 (2016-10-22)
 
 Bugfixes:
