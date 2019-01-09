@@ -2,8 +2,6 @@
 
 Passwordless is a modern node.js module for [Express](http://expressjs.com/) that allows *authentication* and *authorization* without passwords by simply sending one-time password (OTPW) tokens via email or other means. It utilizes a very similar mechanism as the reset password feature of classic websites. The module was inspired by Justin Balthrop's article "[Passwords are Obsolete](https://medium.com/@ninjudd/passwords-are-obsolete-9ed56d483eb)"
 
-Check out a [**demo**](https://passwordless.net) and further documentation on https://passwordless.net or have a look at an [**example**](https://github.com/florianheinemann/passwordless/tree/master/examples/simple-mail).
-
 Token-based authentication is...
 * **Faster to implement** compared to typical user auth systems (you only need one form)
 * **Better for your users** as they get started with your app quickly and don't have to remember passwords
@@ -11,13 +9,13 @@ Token-based authentication is...
 
 ## Getting you started
 
-The following should provide a quick-start in using Passwordless. If you need more details check out the [example](https://github.com/florianheinemann/passwordless/tree/master/examples/simple-mail), the [deep dive](https://passwordless.net/deepdive), or the [documentation](https://passwordless.net/docs/Passwordless.html). Also, don't hesitate to raise comments and questions on [GitHub](https://github.com/florianheinemann/passwordless/issues).
+The following should provide a quick-start in using Passwordless. If you need more details check out the [example](https://github.com/florianheinemann/passwordless/tree/master/examples/simple-mail), the [deep dive](https://github.com/florianheinemann/passwordless/blob/master/DEEPDIVE.MD), or the [documentation](https://florianheinemann.com/passwordless/Passwordless.html). Also, don't hesitate to raise comments and questions on [GitHub](https://github.com/florianheinemann/passwordless/issues).
 
 ### 1. Install the module:
 
 `$ npm install passwordless --save`
 
-You'll also want to install a [TokenStore](https://passwordless.net/plugins) such as [MongoStore](https://github.com/florianheinemann/passwordless-mongostore) and something to deliver the tokens (be it email, SMS or any other means). For example:
+You'll also want to install a [TokenStore](https://github.com/florianheinemann/passwordless/blob/master/PLUGINS.md) such as [MongoStore](https://github.com/florianheinemann/passwordless-mongostore) and something to deliver the tokens (be it email, SMS or any other means). For example:
 
 `$ npm install passwordless-mongostore --save`
 
@@ -463,9 +461,8 @@ Just remove the `app.use(passwordless.sessionSupport());` middleware. Every requ
 By default, tokens are generated using 16 Bytes of pseudo-random data as produced by the cryptographically strong crypto library of Node.js. This can be considered strong enough to withstand brute force attacks especially when combined with a finite time-to-live (set by default to 1h). In addition, it is absolutely mandatory to store the tokens securely by hashing and salting them (done by default with TokenStores such as [MongoStore](https://github.com/florianheinemann/passwordless-mongostore)). Security can be further enhanced by limiting the number of tries per user ID before locking that user out from the service for a certain amount of time.
 
 ## Further documentation
-- [Full API documentation](https://passwordless.net/docs/Passwordless.html)
-- [Getting started](https://passwordless.net/getstarted)
-- [Deep dive](https://passwordless.net/deepdive)
+- [Full API documentation](https://florianheinemann.com/passwordless/Passwordless.html)
+- [Deep dive](https://github.com/florianheinemann/passwordless/blob/master/DEEPDIVE.MD)
 
 ## Tests
 Download the whole repository and call:
